@@ -2,7 +2,9 @@ import {DatabaseService} from '../../database/database.service';
 import {StatusError} from '../../utils/status_error';
 import {EntityConfig} from "./base.model";
 import {BaseModel} from "./base.model";
+import {Service} from "typedi";
 
+@Service()
 export abstract class BaseRepository<T extends BaseModel> {
     protected abstract entityConfig: EntityConfig<T>;
 

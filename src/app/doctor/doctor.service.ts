@@ -4,7 +4,9 @@ import {EntityConfig} from "../base/base.model";
 import {config} from "../../config/environment";
 import {DoctorRepository} from "./doctor.repository";
 import {AuditService} from "../audit/audit.service";
+import {Service} from "typedi";
 
+@Service()
 export class DoctorService extends  BaseService<Doctor_Private> {
     protected entityConfig: EntityConfig<Doctor_Private> = config.entityValues.doctor;
 
