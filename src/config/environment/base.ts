@@ -4,6 +4,7 @@ import { User } from "../../app/user/user.model";
 import { Audit } from "../../app/audit/audit.model";
 import { EntityConfig } from "../../app/base/base.model";
 import { DBOptions } from "../../database/models/db-options";
+import { Availability, Doctor_Private } from "../../app/doctor/doctor.model";
 
 export const baseConfig: {
     port: number;
@@ -11,6 +12,8 @@ export const baseConfig: {
     entityValues: {
         audit: EntityConfig<Audit>;
         user: EntityConfig<User>;
+        doctor: EntityConfig<Doctor_Private>
+        availability: EntityConfig<Availability>
     };
 } = {
     port: 3000,
@@ -37,6 +40,28 @@ export const baseConfig: {
             requiredFields: [
                 { name: 'username', type: 'TEXT' },
                 { name: 'password', type: 'TEXT' }
+            ]
+        },
+        doctor: {
+            table_name: 'doctors',
+            unit: 'Doctor',
+            requiredFields: [
+                { name: 'name', type: 'TEXT' },
+                { name: 'specialty', type: 'TEXT' },
+                { name: 'phone', type: 'TEXT' },
+                { name: 'email', type: 'TEXT' },
+                { name: 'address', type: 'TEXT' },
+                { name: 'qualifications', type: 'TEXT[]' },
+                { name: 'availability', type: 'JSON' }
+            ]
+        },
+        availability: {
+            table_name: 'availabilities',
+            unit: 'Availability',
+            requiredFields: [
+                { name: 'days', type: 'DATE[]' },
+                { name: 'working_hours', type: 'DATE[]' },
+                { name: 'vacations', type: 'DATE[]' }
             ]
         }
     }
