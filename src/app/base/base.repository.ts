@@ -1,8 +1,9 @@
 import {DatabaseService} from '../../database/database.service';
 import {StatusError} from '../../utils/status_error';
 import {EntityConfig} from "./base.model";
+import {BaseModel} from "./base.model";
 
-export abstract class BaseRepository<T extends Object> {
+export abstract class BaseRepository<T extends BaseModel> {
     protected abstract entityConfig: EntityConfig<T>;
 
     protected constructor(

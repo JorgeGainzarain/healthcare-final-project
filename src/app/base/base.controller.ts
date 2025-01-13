@@ -2,8 +2,9 @@ import {NextFunction, Router, Request, Response} from "express";
 import {createResponse} from "../../utils/response";
 import {BaseService} from "./base.service";
 import {EntityConfig} from "./base.model";
+import {BaseModel} from "./base.model";
 
-export abstract class BaseController<T extends {}> {
+export abstract class BaseController<T extends BaseModel> {
     protected abstract entityConfig: EntityConfig<T>;
 
     protected readonly companyRouter: Router;
