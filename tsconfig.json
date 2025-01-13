@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",                         // Base directory to resolve non-absolute module names
+    "paths": {                                 // A series of entries which re-map imports to lookup locations relative to the baseUrl
+      "*": ["*", "src/*"]
+    },
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "target": "es6",                        // Target JavaScript version
+    "module": "commonjs",                      // Use CommonJS for modules
+    "rootDir": "src",                          // Root directory for input files
+    "outDir": "dist",                          // Output directory for compiled files
+    "esModuleInterop": true,                     // Allow default imports from CommonJS modules
+    "strict": true,                              // Enable strict type checking
+    "skipLibCheck": true,                        // Skip type checking for declaration files
+    "moduleResolution": "node",
+    "experimentalDecorators": true,              // Enable experimental support for decorators
+    "emitDecoratorMetadata": true                // Emit metadata for decorators
+
+  },
+  "include": ["src/*"],
+  "exclude": ["node_modules"]                     // Include all .ts files in the src folder
+}
