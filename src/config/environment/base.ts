@@ -51,17 +51,17 @@ export const baseConfig: {
                 { name: 'phone', type: 'TEXT' },
                 { name: 'email', type: 'TEXT' },
                 { name: 'address', type: 'TEXT' },
-                { name: 'qualifications', type: 'TEXT[]' },
-                { name: 'availability', type: 'JSON' }
+                { name: 'qualifications', type: 'TEXT' }, // Array
+                { name: 'availability', type: 'TEXT' } // JSON
             ]
         },
         availability: {
             table_name: 'availabilities',
             unit: 'Availability',
             requiredFields: [
-                { name: 'days', type: 'DATE[]' },
-                { name: 'working_hours', type: 'DATE[]' },
-                { name: 'vacations', type: 'DATE[]' }
+                { name: 'days', type: 'DATE[]' }, // Array
+                { name: 'working_hours', type: 'DATE[]' }, // Array
+                { name: 'vacations', type: 'DATE[]' } // Array
             ]
         }
     }

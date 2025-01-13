@@ -13,10 +13,10 @@ export class DoctorController extends BaseController<Doctor_Private> {
         protected doctorService: DoctorService
     ) {
         super(doctorService);
-        this.getRouter().get('').bind(this.getAll);
-        this.getRouter().get('/:id').bind(this.getById);
-        this.getRouter().post('').bind(this.create);
-        this.getRouter().put('/:id').bind(this.update);
-        this.getRouter().delete('/:id').bind(this.delete);
+        this.getRouter().get('', this.getAll.bind(this));
+        this.getRouter().get('/:id', this.getById.bind(this));
+        this.getRouter().post('', this.create.bind(this));
+        this.getRouter().put('/:id', this.update.bind(this));
+        this.getRouter().delete('/:id', this.delete.bind(this));
     }
 }
