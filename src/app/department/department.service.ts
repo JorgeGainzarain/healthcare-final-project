@@ -1,18 +1,18 @@
 import {BaseService} from "../base/base.service";
-import {Patient} from "./patient.model";
+import {Department} from "./department.model";
 import {EntityConfig} from "../base/base.model";
 import {config} from "../../config/environment";
-import {PatientRepository} from "./patient.repository";
+import {DepartmentRepository} from "./department.repository";
 import {AuditService} from "../audit/audit.service";
 import {Service} from "typedi";
 
 @Service()
-export class PatientService extends  BaseService<Patient> {
-    protected entityConfig: EntityConfig<Patient> = config.entityValues.patient;
+export class DepartmentService extends  BaseService<Department> {
+    protected entityConfig: EntityConfig<Department> = config.entityValues.department;
 
     constructor(
         protected auditService: AuditService,
-        protected departmentRepository: PatientRepository
+        protected departmentRepository: DepartmentRepository
     ) {
         super(auditService, departmentRepository);
     }

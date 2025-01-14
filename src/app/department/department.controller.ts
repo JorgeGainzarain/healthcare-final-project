@@ -1,18 +1,18 @@
 import {BaseController} from "../base/base.controller";
-import {Patient} from "./patient.model";
-import {PatientService} from "./patient.service";
+import {Department} from "./department.model";
+import {DepartmentService} from "./department.service";
 import {EntityConfig} from "../base/base.model";
 import {config} from "../../config/environment";
 import {Service} from "typedi";
 
 @Service()
-export class PatientController extends BaseController<Patient> {
-    protected entityConfig: EntityConfig<Patient> = config.entityValues.patient;
+export class DepartmentController extends BaseController<Department> {
+    protected entityConfig: EntityConfig<Department> = config.entityValues.department;
 
     constructor(
-        protected patientService: PatientService
+        protected departmentService: DepartmentService
     ) {
-        super(patientService);
+        super(departmentService);
         this.getRouter().get('', this.getAll.bind(this));
         this.getRouter().get('/:id', this.getById.bind(this));
         this.getRouter().post('', this.create.bind(this));
