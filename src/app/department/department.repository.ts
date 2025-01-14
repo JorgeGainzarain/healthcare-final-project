@@ -47,30 +47,4 @@ export class DepartmentRepository extends BaseRepository<Department> {
         this.parseFields(department);
         return department;
     }
-
-    // Helper functions for parsing and stringify JSON and array fields
-    protected stringifyFields(department: Partial<Department>): void {
-        // iterate over the department_Private fields and stringify the JSON or [] fields
-        Object.keys(department).forEach((key: string) => {
-            if (this.entityConfig.requiredFields.find((field) => field.name === key)) {
-                const fieldKey = key as keyof Partial<Department>;
-                if (typeof department[fieldKey] === 'object' && department[fieldKey] !== undefined) {
-                    department[fieldKey] = JSON.stringify(department[fieldKey]) as any;
-                }
-            }
-        });
-    }
-
-    protected parseFields(department: Partial<Department>): void {
-        // iterate over the department_Private fields and parse the JSON or [] fields
-        Object.keys(department).forEach((key: string) => {
-            let field = this.entityConfig.requiredFields.find((field) => field.name === key)
-            if (field && (field.type.endsWith('[]') || field.type === 'JSON')) {
-                const fieldKey = key as keyof Partial<Department>;
-                if (typeof department[fieldKey] === 'string') {
-                    department[fieldKey] = JSON.parse(department[fieldKey]) as any;
-                }
-            }
-        });
-    }
 }

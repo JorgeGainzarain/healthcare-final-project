@@ -48,31 +48,4 @@ export class PatientRepository extends BaseRepository<Patient> {
         patients.forEach((patient) => this.parseFields(patient));
         return patients;
     }
-
-
-    // Helper functions for parsing and stringify JSON and array fields
-    protected stringifyFields(patient: Partial<Patient>): void {
-        // iterate over the Patient fields and stringify the JSON or [] fields
-        Object.keys(patient).forEach((key: string) => {
-            if (this.entityConfig.requiredFields.find((field) => field.name === key)) {
-                const fieldKey = key as keyof Partial<Patient>;
-                if (typeof patient[fieldKey] === 'object' && patient[fieldKey] !== undefined) {
-                    patient[fieldKey] = JSON.stringify(patient[fieldKey]) as any;
-                }
-            }
-        });
-    }
-
-    protected parseFields(patient: Partial<Patient>): void {
-        // iterate over the Patient fields and parse the JSON or [] fields
-        Object.keys(patient).forEach((key: string) => {
-            let field = this.entityConfig.requiredFields.find((field) => field.name === key)
-            if (field && (field.type.endsWith('[]') || field.type === 'JSON')) {
-                const fieldKey = key as keyof Partial<Patient>;
-                if (typeof patient[fieldKey] === 'string') {
-                    patient[fieldKey] = JSON.parse(patient[fieldKey]) as any;
-                }
-            }
-        });
-    }
 }
