@@ -11,10 +11,10 @@ export class DepartmentService extends  BaseService<Department> {
     protected entityConfig: EntityConfig<Department> = config.entityValues.department;
 
     constructor(
-        protected auditService: LogService,
-        protected departmentRepository: DepartmentRepository
+        protected departmentRepository: DepartmentRepository,
+        protected auditService: LogService
     ) {
-        super(auditService, departmentRepository);
+        super(departmentRepository, auditService);
     }
 
 }

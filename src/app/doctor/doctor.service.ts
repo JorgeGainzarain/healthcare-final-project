@@ -11,10 +11,10 @@ export class DoctorService extends  BaseService<Doctor_Private> {
     protected entityConfig: EntityConfig<Doctor_Private> = config.entityValues.doctor;
 
     constructor(
-        protected auditService: LogService,
-        protected doctorRepository: DoctorRepository
+        protected doctorRepository: DoctorRepository,
+        protected auditService: LogService
     ) {
-        super(auditService, doctorRepository);
+        super(doctorRepository, auditService);
     }
 
 }

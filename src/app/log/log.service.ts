@@ -13,10 +13,9 @@ export class LogService extends BaseService<Log>{
   protected entityConfig: EntityConfig<Log> = config.entityValues.log;
 
   constructor(
-      protected readonly logService: LogService,
       protected readonly logRepository: LogRepository
   ) {
-    super(logService, logRepository);
+    super(logRepository);
   }
 
   // Custom logic here to avoid circular dependency creating logs of a log creation

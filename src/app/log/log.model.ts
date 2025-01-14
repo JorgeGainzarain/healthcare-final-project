@@ -10,6 +10,6 @@ export interface Log extends BaseModel{
   timestamp: Date,
   type: LogType,
   message: string,
-  details: string,
+  details: BaseModel,
   user_id: number
 }

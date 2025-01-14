@@ -11,10 +11,10 @@ export class RecordService extends  BaseService<Record> {
     protected entityConfig: EntityConfig<Record> = config.entityValues.record;
 
     constructor(
-        protected auditService: LogService,
-        protected recordRepository: RecordRepository
+        protected recordRepository: RecordRepository,
+        protected auditService: LogService
     ) {
-        super(auditService, recordRepository);
+        super(recordRepository, auditService);
     }
 
 }

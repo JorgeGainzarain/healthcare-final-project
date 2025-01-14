@@ -11,10 +11,10 @@ export class AppointmentService extends  BaseService<Appointment> {
     protected entityConfig: EntityConfig<Appointment> = config.entityValues.appointment;
 
     constructor(
-        protected auditService: LogService,
-        protected appointmentRepository: AppointmentRepository
+        protected appointmentRepository: AppointmentRepository,
+        protected auditService: LogService
     ) {
-        super(auditService, appointmentRepository);
+        super(appointmentRepository, auditService);
     }
 
 }

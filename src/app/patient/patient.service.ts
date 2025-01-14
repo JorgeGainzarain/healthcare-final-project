@@ -11,10 +11,10 @@ export class PatientService extends  BaseService<Patient> {
     protected entityConfig: EntityConfig<Patient> = config.entityValues.patient;
 
     constructor(
-        protected auditService: LogService,
-        protected departmentRepository: PatientRepository
+        protected departmentRepository: PatientRepository,
+        protected auditService: LogService
     ) {
-        super(auditService, departmentRepository);
+        super(departmentRepository, auditService);
     }
 
 }

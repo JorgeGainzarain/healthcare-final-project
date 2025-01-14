@@ -48,7 +48,7 @@ export const baseConfig: {
                 { name: 'timestamp', type: 'DATE' },
                 { name: 'type', type: 'TEXT' },
                 { name: 'message', type: 'TEXT' },
-                { name: 'details', type: 'TEXT' },
+                { name: 'details', type: 'JSON' },
                 { name: 'user_id', type: 'INTEGER' }
             ]
         },

@@ -8,8 +8,8 @@ import {Log} from "../log/log.model";
 
 export abstract class BaseService<T extends BaseModel> {
     protected constructor(
-        protected logService: LogService,
-        protected readonly repository: BaseRepository<T>
+        protected readonly repository: BaseRepository<T>,
+        protected logService?: LogService
     ) {}
 
     protected abstract entityConfig: EntityConfig<T>;
@@ -30,7 +30,7 @@ export abstract class BaseService<T extends BaseModel> {
             details: JSON.stringify(entity),
             user_id: user_id
         } as Log;
-        await this.logService.createLog(log);
+        await this.logService?.createLog(log);
     }
 
     async create(user_id: number, part_entity: Partial<T>): Promise<T> {
