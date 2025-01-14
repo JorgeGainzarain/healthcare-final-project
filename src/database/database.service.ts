@@ -22,7 +22,7 @@ export class DatabaseService {
       return this.db;
     }
 
-    console.log(`Opening database at ${this.databasePath}`);
+    //console.log(`Opening database at ${this.databasePath}`);
 
     this.db = await open({
       filename: this.databasePath,

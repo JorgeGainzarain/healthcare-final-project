@@ -3,8 +3,9 @@ import { AuditService } from "../audit/audit.service";
 import {validateObject, validatePartialObject, validateRequiredParams} from "../../utils/validation";
 import { EntityConfig } from "./base.model";
 import { StatusError } from "../../utils/status_error";
+import { BaseModel } from "./base.model";
 
-export abstract class BaseService<T extends { id?: number }> {
+export abstract class BaseService<T extends BaseModel> {
     protected constructor(
         protected auditService: AuditService,
         protected readonly repository: BaseRepository<T>
