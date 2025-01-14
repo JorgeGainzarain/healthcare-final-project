@@ -5,7 +5,17 @@ import { StatusError } from '../utils/status_error';
 
 dotenv.config();
 
+const publicRoutes = [
+    '/login',
+    '/register'
+];
+
 export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
+    const path = req.path;
+    if (publicRoutes.includes(path)) {
+        return next();
+    }
+
     const token = req.session.token;
 
     if (!token) {

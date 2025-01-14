@@ -57,7 +57,8 @@ export const baseConfig: {
             unit: 'User',
             requiredFields: [
                 { name: 'username', type: 'TEXT' },
-                { name: 'password', type: 'TEXT' }
+                { name: 'password', type: 'TEXT' },
+                { name: 'role', type: 'TEXT' }
             ]
         },
         doctor: {
