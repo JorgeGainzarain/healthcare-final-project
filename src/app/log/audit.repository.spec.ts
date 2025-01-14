@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import { Container } from 'typedi';
-import { AuditRepository } from './audit.repository';
+import { LogRepository } from './log.repository';
 import { DatabaseService } from '../../database/database.service';
 import { Audit } from './audit.model';
 import { DBQueryResult } from '../../database/models/db-query-result';
 
 describe('AuditRepository', () => {
-  let auditRepository: AuditRepository;
+  let auditRepository: LogRepository;
   let databaseServiceMock: jest.Mocked<DatabaseService>;
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('AuditRepository', () => {
     Container.set(DatabaseService, databaseServiceMock);
 
     // Get instance of AuditRepository from container
-    auditRepository = Container.get(AuditRepository);
+    auditRepository = Container.get(LogRepository);
   });
 
   describe('create', () => {

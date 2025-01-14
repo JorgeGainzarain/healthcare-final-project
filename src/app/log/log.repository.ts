@@ -1,13 +1,13 @@
 import { Service } from 'typedi';
 import { DatabaseService } from "../../database/database.service";
-import { Audit } from './audit.model';
+import { Log } from './log.model';
 import { BaseRepository } from "../base/base.repository";
 import { config } from "../../config/environment";
 
 
 @Service()
-export class AuditRepository extends BaseRepository<Audit> {
-    protected entityConfig = config.entityValues.audit;
+export class LogRepository extends BaseRepository<Log> {
+    protected entityConfig = config.entityValues.log;
 
     constructor(
       protected databaseService: DatabaseService,
@@ -16,7 +16,7 @@ export class AuditRepository extends BaseRepository<Audit> {
     }
 
     // Custom override of the create method to insert the message into the database
-    async create(entity: Audit): Promise<Audit> {
+    async create(entity: Log): Promise<Log> {
         const queryDoc = {
             sql: `INSERT INTO ${this.entityConfig.table_name} (message) VALUES (?)`,
             params: [entity.message]

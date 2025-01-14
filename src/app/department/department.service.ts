@@ -3,7 +3,7 @@ import {Department} from "./department.model";
 import {EntityConfig} from "../base/base.model";
 import {config} from "../../config/environment";
 import {DepartmentRepository} from "./department.repository";
-import {AuditService} from "../audit/audit.service";
+import {LogService} from "../log/log.service";
 import {Service} from "typedi";
 
 @Service()
@@ -11,7 +11,7 @@ export class DepartmentService extends  BaseService<Department> {
     protected entityConfig: EntityConfig<Department> = config.entityValues.department;
 
     constructor(
-        protected auditService: AuditService,
+        protected auditService: LogService,
         protected departmentRepository: DepartmentRepository
     ) {
         super(auditService, departmentRepository);

@@ -1,7 +1,7 @@
 // src/config/environment/base.ts
 
 import { User } from "../../app/user/user.model";
-import { Audit } from "../../app/audit/audit.model";
+import { Audit } from "../../app/log/audit.model";
 import { EntityConfig } from "../../app/base/base.model";
 import { DBOptions } from "../../database/models/db-options";
 import { Availability, Doctor_Private } from "../../app/doctor/doctor.model";

@@ -1,5 +1,5 @@
 import {BaseModel} from "../base/base.model";
 
-export interface Audit extends BaseModel{
+export interface Log extends BaseModel{
   message: string;
 }

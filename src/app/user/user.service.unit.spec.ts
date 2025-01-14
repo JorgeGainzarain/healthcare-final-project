@@ -6,7 +6,7 @@ import { User } from './user.model';
 import { StatusError } from '../../utils/status_error';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { AuditService } from '../audit/audit.service';
+import { LogService } from '../log/log.service';
 import * as validationUtils from "../../utils/validation";
 import {config} from "../../config/environment";
 
@@ -14,7 +14,7 @@ describe('UserService Unit Tests', () => {
     // Test fixtures
     let userService: UserService;
     let userRepositoryMock: UserRepository;
-    let auditServiceMock: AuditService;
+    let auditServiceMock: LogService;
     let mockUser: User;
     let auditActionSpy: jest.SpyInstance;
     let bcryptHashSpy: jest.SpyInstance;
@@ -35,11 +35,11 @@ describe('UserService Unit Tests', () => {
 
         auditServiceMock = {
             create: jest.fn(),
-        } as unknown as AuditService;
+        } as unknown as LogService;
 
         // Register mocks in the container
         Container.set(UserRepository, userRepositoryMock);
-        Container.set(AuditService, auditServiceMock);
+        Container.set(LogService, auditServiceMock);
 
         // Initialize service using the container
         userService = Container.get(UserService);

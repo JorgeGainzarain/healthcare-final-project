@@ -1,5 +1,5 @@
 import { BaseRepository } from "./base.repository";
-import { AuditService } from "../audit/audit.service";
+import { LogService } from "../log/log.service";
 import {validateObject, validatePartialObject, validateRequiredParams} from "../../utils/validation";
 import { EntityConfig } from "./base.model";
 import { StatusError } from "../../utils/status_error";
@@ -7,7 +7,7 @@ import { BaseModel } from "./base.model";
 
 export abstract class BaseService<T extends BaseModel> {
     protected constructor(
-        protected auditService: AuditService,
+        protected auditService: LogService,
         protected readonly repository: BaseRepository<T>
     ) {}
 

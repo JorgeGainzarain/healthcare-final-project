@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { AuditService } from '../audit/audit.service';
+import { LogService } from '../log/log.service';
 import { User } from './user.model';
 import { UserRepository } from './user.repository';
 import { BaseService } from "../base/base.service";
@@ -17,7 +17,7 @@ export class UserService extends BaseService<User> {
     protected entityConfig = config.entityValues.user;
 
     constructor(
-        protected auditService: AuditService,
+        protected auditService: LogService,
         protected userRepository: UserRepository
     ) {
         super(auditService, userRepository);

@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import { Container } from 'typedi';
-import { AuditService } from './audit.service';
-import { AuditRepository } from './audit.repository';
+import { LogService } from './log.service';
+import { LogRepository } from './log.repository';
 import { Audit } from './audit.model';
 
 describe('AuditService', () => {
-  let auditService: AuditService;
-  let auditRepositoryMock: jest.Mocked<AuditRepository>;
+  let auditService: LogService;
+  let auditRepositoryMock: jest.Mocked<LogRepository>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -17,13 +17,13 @@ describe('AuditService', () => {
       create: jest.fn(),
       findAll: jest.fn(),
       findById: jest.fn(),
-    } as unknown as jest.Mocked<AuditRepository>;
+    } as unknown as jest.Mocked<LogRepository>;
 
     // Register the mock in the container
-    Container.set(AuditRepository, auditRepositoryMock);
+    Container.set(LogRepository, auditRepositoryMock);
 
     // Get an instance of AuditService from the container
-    auditService = Container.get(AuditService);
+    auditService = Container.get(LogService);
   });
 
   describe('create', () => {
