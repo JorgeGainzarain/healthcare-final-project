@@ -1,8 +1,12 @@
 import {DatabaseService} from '../../database/database.service';
 import {StatusError} from '../../utils/status_error';
 import {EntityConfig} from "./base.model";
+import {BaseModel} from "./base.model";
+import {Service} from "typedi";
+import {Patient} from "../patient/patient.model";
 
-export abstract class BaseRepository<T extends Object> {
+@Service()
+export abstract class BaseRepository<T extends BaseModel> {
     protected abstract entityConfig: EntityConfig<T>;
 
     protected constructor(
@@ -89,5 +93,33 @@ export abstract class BaseRepository<T extends Object> {
 
     async exists(fields: Partial<T>): Promise<boolean> {
         return (await this.findByFields(fields) !== undefined);
+    }
+
+    // Helper functions for parsing and stringify JSON and array fields
+    protected stringifyFields(patient: Partial<Patient>): void {
+        if (!patient) return;
+        // iterate over the Patient fields and stringify the JSON or [] fields
+        Object.keys(patient).forEach((key: string) => {
+            if (this.entityConfig.requiredFields.find((field) => field.name === key)) {
+                const fieldKey = key as keyof Partial<Patient>;
+                if (typeof patient[fieldKey] === 'object' && patient[fieldKey] !== undefined) {
+                    patient[fieldKey] = JSON.stringify(patient[fieldKey]) as any;
+                }
+            }
+        });
+    }
+
+    protected parseFields(patient: Partial<Patient>): void {
+        if (!patient) return;
+        // iterate over the Patient fields and parse the JSON or [] fields
+        Object.keys(patient).forEach((key: string) => {
+            let field = this.entityConfig.requiredFields.find((field) => field.name === key)
+            if (field && (field.type.endsWith('[]') || field.type === 'JSON' || field.type === 'DATE')) {
+                const fieldKey = key as keyof Partial<Patient>;
+                if (typeof patient[fieldKey] === 'string') {
+                    patient[fieldKey] = JSON.parse(patient[fieldKey]) as any;
+                }
+            }
+        });
     }
 }

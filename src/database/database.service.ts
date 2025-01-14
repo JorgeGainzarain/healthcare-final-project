@@ -22,7 +22,7 @@ export class DatabaseService {
       return this.db;
     }
 
-    console.log(`Opening database at ${this.databasePath}`);
+    //console.log(`Opening database at ${this.databasePath}`);
 
     this.db = await open({
       filename: this.databasePath,
@@ -77,6 +77,8 @@ export class DatabaseService {
         console.error(`Table ${table.table_name} has no required fields.`);
         process.exit(0);
       }
+
+      if (table.table_name === '') continue;
 
       const createTableSQL = `
         CREATE TABLE IF NOT EXISTS ${table.table_name.toLowerCase().replace(' ', '_')} (
