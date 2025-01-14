@@ -8,6 +8,7 @@ import { Availability, Doctor_Private } from "../../app/doctor/doctor.model";
 import { Patient } from "../../app/patient/patient.model";
 import { Record, Record_Details, Test, Diagnosis, Prescription } from "../../app/record/record.model";
 import { Department, Service } from "../../app/department/department.model";
+import {Appointment, Appointment_Details} from "../../app/appointment/appointment.model";
 
 export const baseConfig: {
     port: number;
@@ -24,7 +25,9 @@ export const baseConfig: {
         prescription: EntityConfig<Prescription>;
         department: EntityConfig<Department>;
         service: EntityConfig<Service>;
-        record: EntityConfig<Record>
+        record: EntityConfig<Record>;
+        appointment: EntityConfig<Appointment>;
+        appointment_details: EntityConfig<Appointment_Details>;
     };
 } = {
     port: 3000,
@@ -68,7 +71,7 @@ export const baseConfig: {
         },
         availability: {
             table_name: '',
-            unit: 'Availability',
+            unit: '',
             requiredFields: [
                 { name: 'days', type: 'DATE[]' },
                 { name: 'working_hours', type: 'DATE[]' },
@@ -89,7 +92,7 @@ export const baseConfig: {
         },
         record_details: {
             table_name: '',
-            unit: 'Record_Details',
+            unit: '',
             requiredFields: [
                 { name: 'diagnosis', type: 'JSON[]' },
                 { name: 'prescriptions', type: 'JSON[]' },
@@ -98,7 +101,7 @@ export const baseConfig: {
         },
         diagnosis: {
             table_name: '',
-            unit: 'Diagnosis',
+            unit: '',
             requiredFields: [
                 { name: 'description', type: 'TEXT' },
                 { name: 'symptoms', type: 'TEXT[]' },
@@ -107,7 +110,7 @@ export const baseConfig: {
         },
         prescription: {
             table_name: '',
-            unit: 'Prescription',
+            unit: '',
             requiredFields: [
                 { name: 'name', type: 'TEXT' },
                 { name: 'dose', type: 'TEXT' },
@@ -118,7 +121,7 @@ export const baseConfig: {
         },
         test: {
             table_name: '',
-            unit: 'Test',
+            unit: '',
             requiredFields: [
                 { name: 'name', type: 'TEXT' },
                 { name: 'type', type: 'TEXT' },
@@ -138,7 +141,7 @@ export const baseConfig: {
         },
         service: {
             table_name: '',
-            unit: 'Service',
+            unit: '',
             requiredFields: [
                 { name: 'name', type: 'TEXT' },
                 { name: 'type', type: 'TEXT' }
@@ -151,6 +154,24 @@ export const baseConfig: {
                 { name: 'doctor_id', type: 'INTEGER' },
                 { name: 'patient_id', type: 'INTEGER' },
                 { name: 'record_details', type: 'JSON' }
+            ]
+        },
+        appointment: {
+            table_name: 'appointments',
+            unit: 'Appointment',
+            requiredFields: [
+                { name: 'doctor_id', type: 'INTEGER' },
+                { name: 'patient_id', type: 'INTEGER' },
+                { name: 'appointment_details', type: 'JSON' }
+            ]
+        },
+        appointment_details: {
+            table_name: '',
+            unit: '',
+            requiredFields: [
+                { name: 'date', type: 'DATE' },
+                { name: 'location', type: 'TEXT' },
+                { name: 'status', type: 'BOOLEAN' }
             ]
         }
     }

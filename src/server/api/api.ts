@@ -5,6 +5,7 @@ import {DoctorController} from "../../app/doctor/doctor.controller";
 import {PatientController} from "../../app/patient/patient.controller";
 import {DepartmentController} from "../../app/department/department.controller";
 import {RecordController} from "../../app/record/record.controller";
+import {AppointmentController} from "../../app/appointment/appointment.controller";
 
 @Service()
 export class Api {
@@ -15,7 +16,8 @@ export class Api {
       private doctorController: DoctorController,
       private patientController: PatientController,
       private departmentController: DepartmentController,
-      private recordController: RecordController
+      private recordController: RecordController,
+      private appointmentController: AppointmentController
   ) {
     this.apiRouter = Router();
     this.apiRouter.use('/', userController.getRouter());
@@ -23,6 +25,7 @@ export class Api {
     this.apiRouter.use('/patient', patientController.getRouter());
     this.apiRouter.use('/department', departmentController.getRouter());
     this.apiRouter.use('/record', recordController.getRouter());
+    this.apiRouter.use('/appointment', appointmentController.getRouter());
   }
 
   getApiRouter(): Router {
