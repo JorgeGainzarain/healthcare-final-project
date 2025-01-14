@@ -1,0 +1,31 @@
+meta {
+  name: update
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/api/{{entity}}/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Cardiologyst",
+    "description": "Department specializing in heart-related treatments",
+    "services": [
+      {
+        "id": 1,
+        "name": "ECG",
+        "type": "Diagnostic"
+      },
+      {
+        "id": 2,
+        "name": "Angioplasty",
+        "type": "Surgical"
+      }
+    ],
+    "doctors": [101, 102, 103]
+  }
+}

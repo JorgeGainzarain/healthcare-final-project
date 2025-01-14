@@ -5,9 +5,11 @@ import { BaseController } from "../base/base.controller";
 import { config } from "../../config/environment";
 import { NextFunction, Request, Response } from "express";
 import {createResponse} from "../../utils/response";
+import {Doctor_Private} from "../doctor/doctor.model";
+import {Patient} from "../patient/patient.model";
 
 @Service()
-export class UserController extends BaseController<User> {
+export class UserController extends BaseController<User | Patient | Doctor_Private> {
     protected entityConfig = config.entityValues.user;
 
     constructor(

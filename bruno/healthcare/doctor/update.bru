@@ -1,0 +1,39 @@
+meta {
+  name: update
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/api/{{entity}}/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "name": "Dr. John Doe",
+      "specialty": "Cardiology",
+      "phone": "123-456-7890",
+      "email": "johndoe@example.com",
+      "address": "123 Main St, Anytown, USA",
+      "qualifications": [
+        "MD",
+        "PhD"
+      ],
+      "availability": {
+        "days": [
+          "2023-10-01",
+          "2023-10-02"
+        ],
+        "working_hours": [
+          "09:00",
+          "17:00"
+        ],
+        "vacations": [
+          "2023-12-25",
+          "2023-12-31"
+        ]
+      }
+  }
+}
