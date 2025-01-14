@@ -19,4 +19,5 @@ export class DoctorController extends BaseController<Doctor_Private> {
         this.getRouter().put('/:id', this.update.bind(this));
         this.getRouter().delete('/:id', this.delete.bind(this));
     }
+
 }
