@@ -5,7 +5,8 @@ import { Audit } from "../../app/audit/audit.model";
 import { EntityConfig } from "../../app/base/base.model";
 import { DBOptions } from "../../database/models/db-options";
 import { Availability, Doctor_Private } from "../../app/doctor/doctor.model";
-import { Patient, Record_Details, Test, Diagnosis, Prescription } from "../../app/patient/patient.model";
+import { Patient } from "../../app/patient/patient.model";
+import { Record, Record_Details, Test, Diagnosis, Prescription } from "../../app/record/record.model";
 import { Department, Service } from "../../app/department/department.model";
 
 export const baseConfig: {
@@ -23,6 +24,7 @@ export const baseConfig: {
         prescription: EntityConfig<Prescription>;
         department: EntityConfig<Department>;
         service: EntityConfig<Service>;
+        record: EntityConfig<Record>
     };
 } = {
     port: 3000,
@@ -94,16 +96,6 @@ export const baseConfig: {
                 { name: 'tests', type: 'JSON[]' }
             ]
         },
-        test: {
-            table_name: '',
-            unit: 'Test',
-            requiredFields: [
-                { name: 'name', type: 'TEXT' },
-                { name: 'type', type: 'TEXT' },
-                { name: 'result', type: 'TEXT' },
-                { name: 'date', type: 'DATE' }
-            ]
-        },
         diagnosis: {
             table_name: '',
             unit: 'Diagnosis',
@@ -124,6 +116,16 @@ export const baseConfig: {
                 { name: 'instructions', type: 'TEXT' }
             ]
         },
+        test: {
+            table_name: '',
+            unit: 'Test',
+            requiredFields: [
+                { name: 'name', type: 'TEXT' },
+                { name: 'type', type: 'TEXT' },
+                { name: 'result', type: 'TEXT' },
+                { name: 'date', type: 'DATE' }
+            ]
+        },
         department: {
             table_name: 'departments',
             unit: 'Department',
@@ -140,6 +142,15 @@ export const baseConfig: {
             requiredFields: [
                 { name: 'name', type: 'TEXT' },
                 { name: 'type', type: 'TEXT' }
+            ]
+        },
+        record: {
+            table_name: 'records',
+            unit: 'Record',
+            requiredFields: [
+                { name: 'doctor_id', type: 'INTEGER' },
+                { name: 'patient_id', type: 'INTEGER' },
+                { name: 'record_details', type: 'JSON' }
             ]
         }
     }

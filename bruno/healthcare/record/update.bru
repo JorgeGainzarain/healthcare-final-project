@@ -1,0 +1,29 @@
+meta {
+  name: update
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/api/{{entity}}/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "doctor_id": 0,
+    "patient_id": 1,
+    "record_details": {
+      "diagnosis": {
+        
+      },
+      "prescriptions": {
+        
+      },
+      "tests": {
+        
+      }
+    }
+  }
+}
