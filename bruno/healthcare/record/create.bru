@@ -1,0 +1,29 @@
+meta {
+  name: create
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/{{entity}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "doctor_id": 0,
+    "patient_id": 0,
+    "record_details": {
+      "diagnosis": {
+        
+      },
+      "prescriptions": {
+        
+      },
+      "tests": {
+        
+      }
+    }
+  }
+}
