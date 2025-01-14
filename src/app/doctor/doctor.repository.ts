@@ -47,30 +47,4 @@ export class DoctorRepository extends BaseRepository<Doctor_Private> {
         this.parseFields(doctor);
         return doctor;
     }
-
-    // Helper functions for parsing and stringify JSON and array fields
-    protected stringifyFields(doctor: Partial<Doctor_Private>): void {
-        // iterate over the Doctor_Private fields and stringify the JSON or [] fields
-        Object.keys(doctor).forEach((key: string) => {
-            if (this.entityConfig.requiredFields.find((field) => field.name === key)) {
-                const fieldKey = key as keyof Partial<Doctor_Private>;
-                if (typeof doctor[fieldKey] === 'object' && doctor[fieldKey] !== undefined) {
-                    doctor[fieldKey] = JSON.stringify(doctor[fieldKey]) as any;
-                }
-            }
-        });
-    }
-
-    protected parseFields(doctor: Partial<Doctor_Private>): void {
-        // iterate over the Doctor_Private fields and parse the JSON or [] fields
-        Object.keys(doctor).forEach((key: string) => {
-            let field = this.entityConfig.requiredFields.find((field) => field.name === key)
-            if (field && (field.type.endsWith('[]') || field.type === 'JSON')) {
-                const fieldKey = key as keyof Partial<Doctor_Private>;
-                if (typeof doctor[fieldKey] === 'string') {
-                    doctor[fieldKey] = JSON.parse(doctor[fieldKey]) as any;
-                }
-            }
-        });
-    }
 }
