@@ -12,41 +12,20 @@ post {
 
 body:json {
   {
-    "name": "John Doe",
-    "date_of_birth": "1980-01-01",
-    "gender": "Male",
-    "emergency_contact": "Jane Doe",
-    "allergies": ["Peanuts", "Penicillin"],
-    "medical_history": [
+    "name": "Cardiology",
+    "description": "Department specializing in heart-related treatments",
+    "services": [
       {
-        "diagnosis": [
-          {
-            "id": 1,
-            "description": "Hypertension",
-            "symptoms": ["High blood pressure"],
-            "doctor_notes": "Monitor blood pressure regularly"
-          }
-        ],
-        "prescriptions": [
-          {
-            "id": 1,
-            "name": "Lisinopril",
-            "dose": "10mg",
-            "frequency": "Once daily",
-            "start_date": "2023-01-01",
-            "instructions": "Take with water"
-          }
-        ],
-        "tests": [
-          {
-            "id": 1,
-            "name": "Blood Test",
-            "type": "CBC",
-            "result": "Normal",
-            "date": "2023-01-01"
-          }
-        ]
+        "id": 1,
+        "name": "ECG",
+        "type": "Diagnostic"
+      },
+      {
+        "id": 2,
+        "name": "Angioplasty",
+        "type": "Surgical"
       }
-    ]
+    ],
+    "doctors": [101, 102, 103]
   }
 }
