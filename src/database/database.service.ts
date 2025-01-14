@@ -78,6 +78,8 @@ export class DatabaseService {
         process.exit(0);
       }
 
+      if (table.table_name === '') continue;
+
       const createTableSQL = `
         CREATE TABLE IF NOT EXISTS ${table.table_name.toLowerCase().replace(' ', '_')} (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
