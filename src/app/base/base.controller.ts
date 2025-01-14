@@ -21,7 +21,7 @@ export abstract class BaseController<T extends BaseModel> {
     }
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
-        return this.service.create(req.body)
+        return this.service.create(req.session.userId ?? 0, req.body)
             .then((entity: T) => {
                 res.status(201).json(createResponse('success', this.entityConfig.unit + ' created successfully', entity));
             })
@@ -31,7 +31,7 @@ export abstract class BaseController<T extends BaseModel> {
     }
 
     async update(req: Request, res: Response, next: NextFunction): Promise<void> {
-        return this.service.update(parseInt(req.params.id), req.body)
+        return this.service.update(req.session.userId ?? 0, parseInt(req.params.id), req.body)
             .then((entity: T) => {
                 res.status(200).json(createResponse('success', this.entityConfig.unit + ' updated successfully', entity));
             })
@@ -41,7 +41,7 @@ export abstract class BaseController<T extends BaseModel> {
     }
 
     async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
-        return this.service.delete(parseInt(req.params.id))
+        return this.service.delete(req.session.userId ?? 0, parseInt(req.params.id))
             .then((entity: T) => {
                 res.status(200).json(createResponse('success', this.entityConfig.unit + ' deleted successfully', entity));
             })
@@ -50,8 +50,8 @@ export abstract class BaseController<T extends BaseModel> {
             });
     }
 
-    async getAll(_req: Request, res: Response, next: NextFunction): Promise<void> {
-        return this.service.getAll()
+    async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+        return this.service.getAll(req.session.userId ?? 0)
             .then((entities: T[]) => {
                 res.status(200).json(createResponse('success', this.entityConfig.unit + ' retrieved successfully', entities));
             })
@@ -61,7 +61,7 @@ export abstract class BaseController<T extends BaseModel> {
     }
 
     async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
-        return this.service.getById(parseInt(req.params.id))
+        return this.service.getById(req.session.userId ?? 0, parseInt(req.params.id))
             .then((entity: T) => {
                 res.status(200).json(createResponse('success', this.entityConfig.unit + ' retrieved successfully', entity));
             })
@@ -69,6 +69,5 @@ export abstract class BaseController<T extends BaseModel> {
                 next(error);
             });
     }
-
 
 }

@@ -15,17 +15,4 @@ export class LogRepository extends BaseRepository<Log> {
       super(databaseService);
     }
 
-    // Custom override of the create method to insert the message into the database
-    async create(entity: Log): Promise<Log> {
-        const queryDoc = {
-            sql: `INSERT INTO ${this.entityConfig.table_name} (message) VALUES (?)`,
-            params: [entity.message]
-        };
-
-        const result = await this.databaseService.execQuery(queryDoc);
-
-
-        return result.rows[0];
-    }
-
 }

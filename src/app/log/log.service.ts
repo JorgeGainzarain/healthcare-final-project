@@ -1,45 +1,27 @@
 import 'reflect-metadata';
 
 import { Service } from 'typedi';
-import { isString, isNumber, toNumber } from 'lodash';
 
+import { config } from "../../config/environment";
 import { LogRepository } from './log.repository';
 import { Log } from './log.model';
+import {BaseService} from "../base/base.service";
+import {EntityConfig} from "../base/base.model";
 
 @Service()
-export class LogService {
+export class LogService extends BaseService<Log>{
+  protected entityConfig: EntityConfig<Log> = config.entityValues.log;
 
-  constructor(private readonly logRepository: LogRepository) { }
+  constructor(
+      protected readonly logService: LogService,
+      protected readonly logRepository: LogRepository
+  ) {
+    super(logService, logRepository);
+  }
 
-  async create(msg: string): Promise<Log> {
-    const log:Log = {message: msg};
-
-    if (!this.isValidLog(log)) {
-      return Promise.reject(new Error('logInputValidationError'));
-    }
-
+  // Custom logic here to avoid circular dependency creating logs of a log creation
+  async createLog(log: Log): Promise<Log> {
     return await this.logRepository.create(log);
-  }
-
-  async findAll(): Promise<Log[]> {
-    return await this.logRepository.findAll();
-  }
-
-  async findById(logId: number): Promise<Log | null> {
-    if (!this.isValidId(logId)) {
-      return Promise.reject(new Error('InvalidLogIdError'));
-    }
-
-    return await this.logRepository.findById(logId);
-  }
-
-  private isValidId(logId: any): boolean {
-    return logId != null && isNumber(toNumber(logId)) && toNumber(logId) > 0;
-  }
-
-  private isValidLog(log: Log): boolean {
-    return log != null
-      && log.message != null && isString(log.message);
   }
 
 }

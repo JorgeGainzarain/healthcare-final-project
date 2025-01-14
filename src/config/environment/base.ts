@@ -1,7 +1,6 @@
 // src/config/environment/base.ts
 
 import { User } from "../../app/user/user.model";
-import { Audit } from "../../app/log/audit.model";
 import { EntityConfig } from "../../app/base/base.model";
 import { DBOptions } from "../../database/models/db-options";
 import { Availability, Doctor_Private } from "../../app/doctor/doctor.model";
@@ -9,12 +8,13 @@ import { Patient } from "../../app/patient/patient.model";
 import { Record, Record_Details, Test, Diagnosis, Prescription } from "../../app/record/record.model";
 import { Department, Service } from "../../app/department/department.model";
 import {Appointment, Appointment_Details} from "../../app/appointment/appointment.model";
+import {Log} from "../../app/log/log.model";
 
 export const baseConfig: {
     port: number;
     dbOptions: DBOptions;
     entityValues: {
-        audit: EntityConfig<Audit>;
+        log: EntityConfig<Log>;
         user: EntityConfig<User>;
         doctor: EntityConfig<Doctor_Private>;
         availability: EntityConfig<Availability>;
@@ -41,11 +41,15 @@ export const baseConfig: {
     },
 
     entityValues: {
-        audit: {
-            table_name: 'audits',
-            unit: 'Audit',
+        log: {
+            table_name: 'logs',
+            unit: 'Log',
             requiredFields: [
-                { name: 'message', type: 'TEXT' }
+                { name: 'timestamp', type: 'DATE' },
+                { name: 'type', type: 'TEXT' },
+                { name: 'message', type: 'TEXT' },
+                { name: 'details', type: 'TEXT' },
+                { name: 'user_id', type: 'INTEGER' }
             ]
         },
         user: {
