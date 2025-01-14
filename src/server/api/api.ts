@@ -7,6 +7,7 @@ import {DepartmentController} from "../../app/department/department.controller";
 import {RecordController} from "../../app/record/record.controller";
 import {AppointmentController} from "../../app/appointment/appointment.controller";
 import {LogController} from "../../app/log/log.controller";
+import {authenticateJWT} from "../../middleware/authentificate_JWT";
 
 @Service()
 export class Api {
@@ -22,6 +23,7 @@ export class Api {
       private logController: LogController
   ) {
     this.apiRouter = Router();
+    this.apiRouter.use(authenticateJWT);
     this.apiRouter.use('/', userController.getRouter());
     this.apiRouter.use('/doctor', doctorController.getRouter());
     this.apiRouter.use('/patient', patientController.getRouter());
