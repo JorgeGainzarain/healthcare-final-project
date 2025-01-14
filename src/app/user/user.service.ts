@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { AuditService } from '../audit/audit.service';
+import { LogService } from '../log/log.service';
 import { User } from './user.model';
 import { UserRepository } from './user.repository';
 import { BaseService } from "../base/base.service";
@@ -9,6 +9,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { StatusError } from "../../utils/status_error";
 import {validateObject} from "../../utils/validation";
+import { Log } from 'app/log/log.model';
 
 dotenv.config();
 
@@ -17,10 +18,10 @@ export class UserService extends BaseService<User> {
     protected entityConfig = config.entityValues.user;
 
     constructor(
-        protected auditService: AuditService,
+        protected auditService: LogService,
         protected userRepository: UserRepository
     ) {
-        super(auditService, userRepository);
+        super(userRepository, auditService);
     }
 
     public async register(part_user: Partial<User>): Promise<Omit<User, 'password'>> {
@@ -31,7 +32,7 @@ export class UserService extends BaseService<User> {
         const createdUser = await this.userRepository.create(user);
         const { password, ...userWithoutPassword } = createdUser;
 
-        await this.auditAction({ ...userWithoutPassword, password: ''} as User , 'registered');
+        await this.logUserAction({ ...userWithoutPassword, password: ''} as User , 'registered');
         return userWithoutPassword;
     }
 
@@ -43,10 +44,22 @@ export class UserService extends BaseService<User> {
             const token = jwt.sign({ id: foundUser.id, username: foundUser.username }, process.env.JWT_SECRET!, { expiresIn: '1h' });
             const { password, ...userWithoutPassword } = foundUser;
 
-            await this.auditAction({ ...userWithoutPassword, password: ''}, 'logged in');
+            await this.logUserAction({ ...userWithoutPassword, password: ''}, 'logged in');
             return { user: userWithoutPassword, token };
         } else {
             throw new StatusError(401, 'Invalid username or password');
         }
+    }
+
+    private async logUserAction(user: User, action: string): Promise<void> {
+        const logMessage = `User ${user.username} has been ${action}`;
+        const log = {
+            timestamp: new Date(),
+            type: 'INFO',
+            message: logMessage,
+            details: JSON.stringify(user),
+            user_id: user.id
+        } as Log;
+        await this.auditService.createLog(log);
     }
 }

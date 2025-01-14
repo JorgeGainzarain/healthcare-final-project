@@ -4,7 +4,7 @@ import { DatabaseService } from '../../database/database.service';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserRepository } from './user.repository';
-import { AuditService } from '../audit/audit.service';
+import { LogService } from '../log/log.service';
 import { User } from './user.model';
 import request from 'supertest';
 import { Server } from '../../server/server';
@@ -15,7 +15,7 @@ import bcrypt from 'bcrypt';
 
 describe('User Integration Tests', () => {
     let databaseService: DatabaseService;
-    let auditService: AuditService;
+    let auditService: LogService;
     let userController: UserController;
     let userService: UserService;
     let userRepository: UserRepository;
@@ -28,7 +28,7 @@ describe('User Integration Tests', () => {
         // Initialize the services
         Container.reset();
         databaseService = Container.get(DatabaseService);
-        auditService = Container.get(AuditService);
+        auditService = Container.get(LogService);
         userRepository = Container.get(UserRepository);
         userService = Container.get(UserService);
         userController = Container.get(UserController);
@@ -89,7 +89,7 @@ describe('User Integration Tests', () => {
         expect(response.body).toEqual(expect.objectContaining(body));
     }
 
-    async function assertAuditLogs(auditService: AuditService, expectedLogs: number, messageContains: string[]) {
+    async function assertAuditLogs(auditService: LogService, expectedLogs: number, messageContains: string[]) {
         const auditLogs = await auditService.findAll();
         expect(auditLogs).toHaveLength(expectedLogs);
         messageContains.forEach((msg, index) => {

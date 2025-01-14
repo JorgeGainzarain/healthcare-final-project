@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Container } from 'typedi';
 import { BaseService } from './base.service';
 import { BaseRepository } from './base.repository';
-import { AuditService } from '../audit/audit.service';
+import { LogService } from '../log/log.service';
 import { StatusError } from '../../utils/status_error';
 import { EntityConfig } from './base.model';
 import * as validationUtils from "../../utils/validation";
@@ -17,7 +17,7 @@ class TestService extends BaseService<TestEntity> {
     protected entityConfig: EntityConfig<TestEntity> = config.entityValues.test;
 
     constructor(
-        protected auditService: AuditService,
+        protected auditService: LogService,
         protected repository: BaseRepository<TestEntity>
     ) {
         super(auditService, repository);
@@ -28,7 +28,7 @@ describe('BaseService Unit Tests', () => {
     // Test fixtures
     let service: TestService;
     let repositoryMock: BaseRepository<TestEntity>;
-    let auditServiceMock: AuditService;
+    let auditServiceMock: LogService;
     let auditActionSpy: jest.SpyInstance;
     let validateObjectSpy: jest.SpyInstance;
     let validatePartialObjectSpy: jest.SpyInstance;
@@ -51,11 +51,11 @@ describe('BaseService Unit Tests', () => {
 
         auditServiceMock = {
             create: jest.fn()
-        } as unknown as AuditService;
+        } as unknown as LogService;
 
         // Register mocks in the container
         Container.set(BaseRepository, repositoryMock);
-        Container.set(AuditService, auditServiceMock);
+        Container.set(LogService, auditServiceMock);
 
         // Initialize service using the container
         service = new TestService(auditServiceMock, repositoryMock);
