@@ -9,7 +9,7 @@ import {Log} from "../log/log.model";
 export abstract class BaseService<T extends BaseModel> {
     protected constructor(
         protected readonly repository: BaseRepository<T>,
-        protected logService?: LogService
+        protected logService?: LogService,
     ) {}
 
     protected abstract entityConfig: EntityConfig<T>;
@@ -64,7 +64,7 @@ export abstract class BaseService<T extends BaseModel> {
         return entities;
     }
 
-    async getById(user_id: number, id: number): Promise<T> {
+    async findById(user_id: number, id: number): Promise<T> {
         validateRequiredParams({ id });
 
         const entity = await this.repository.findById(id);

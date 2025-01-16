@@ -35,6 +35,7 @@ export class UserController extends BaseController<User | Patient | Doctor_Priva
         return this.userService.login(req.body)
             .then(({ user, token } : {user: Omit<User,'password'>, token: string}) => {
                 req.session.token = token;
+                req.session.userId = user.id;
                 res.status(200).json(createResponse('success', 'login successful', { user, token }));
             })
             .catch((error: any) => {

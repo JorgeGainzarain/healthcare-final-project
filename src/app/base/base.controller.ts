@@ -61,7 +61,7 @@ export abstract class BaseController<T extends BaseModel> {
     }
 
     async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
-        return this.service.getById(req.session.userId ?? 0, parseInt(req.params.id))
+        return this.service.findById(req.session.userId ?? 0, parseInt(req.params.id))
             .then((entity: T) => {
                 res.status(200).json(createResponse('success', this.entityConfig.unit + ' retrieved successfully', entity));
             })

@@ -17,6 +17,7 @@ export interface Doctor_Public extends BaseModel {
 }
 
 export interface Doctor_Private extends Doctor_Public {
+  user_id: number,
   phone: string;
   email: string;
   address: string;
