@@ -4,6 +4,7 @@ import { LogService } from '../../../app/log/log.service';
 import { BaseModel, EntityConfig } from '../../../app/base/base.model';
 import { StatusError } from '../../../utils/status_error';
 import { Session } from 'express-session';
+import {config} from "../../../config/environment";
 
 jest.mock('../../../app/base/base.repository');
 jest.mock('../../../app/log/log.service');
@@ -13,11 +14,7 @@ interface TestEntity extends BaseModel {
 }
 
 class TestService extends BaseService<TestEntity> {
-  protected entityConfig: EntityConfig<TestEntity> = {
-    table_name: 'test_entities',
-    unit: 'TestEntity',
-    requiredFields: [{ name: 'name', type: 'string' }]
-  };
+  protected entityConfig: EntityConfig<TestEntity> = config.entityValues.test;
 }
 
 describe('BaseService', () => {
@@ -46,6 +43,7 @@ describe('BaseService', () => {
 
   it('should create an entity', async () => {
     const entity = { id: 1, name: 'Test' };
+    repository.exists.mockResolvedValue(false);
     repository.create.mockResolvedValue(entity);
 
     const result = await service.create(session as Session, { name: 'Test' });

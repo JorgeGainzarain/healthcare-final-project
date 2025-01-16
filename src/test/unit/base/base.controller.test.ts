@@ -5,6 +5,7 @@ import { BaseModel, EntityConfig } from '../../../app/base/base.model';
 import { createResponse } from '../../../utils/response';
 import { Session } from "express-session";
 import { StatusError } from "../../../utils/status_error";
+import { config } from "../../../config/environment";
 
 jest.mock('../../../app/base/base.service');
 
@@ -13,11 +14,7 @@ interface TestEntity extends BaseModel {
 }
 
 class TestController extends BaseController<TestEntity> {
-  protected entityConfig: EntityConfig<TestEntity> = {
-    table_name: 'test_entities',
-    unit: 'TestEntity',
-    requiredFields: [{ name: 'name', type: 'string' }]
-  };
+  protected entityConfig: EntityConfig<TestEntity> = config.entityValues.test;
 }
 
 describe('BaseController', () => {
