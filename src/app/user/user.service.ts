@@ -50,7 +50,6 @@ export class UserService extends BaseService<User | Patient | Doctor_Private> {
 
         // Remove password and username fields from the user object
         const { username, role, password: pass, ...userWithoutPasswordAndUser } = { ...userFull, user_id: createdUser.id };
-        session.userId = userWithoutPasswordAndUser.id?? 0;
 
         if (user.role.toUpperCase() === UserType.PATIENT) {
             await this.patientRepository.create({

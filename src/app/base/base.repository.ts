@@ -100,7 +100,7 @@ export abstract class BaseRepository<T extends BaseModel> {
     // Helper functions for parsing and stringify JSON and array fields
     protected stringifyFields(patient: Partial<Patient>): void {
         if (!patient) return;
-        // iterate over the Patient fields and stringify the JSON or [] fields
+        // iterate over the fields and stringify the JSON or [] fields
         Object.keys(patient).forEach((key: string) => {
             if (this.entityConfig.requiredFields.find((field) => field.name === key)) {
                 const fieldKey = key as keyof Partial<Patient>;
@@ -113,7 +113,7 @@ export abstract class BaseRepository<T extends BaseModel> {
 
     protected parseFields(patient: Partial<Patient>): void {
         if (!patient) return;
-        // iterate over the Patient fields and parse the JSON or [] fields
+        // iterate over the fields and parse the JSON or [] fields
         Object.keys(patient).forEach((key: string) => {
             let field = this.entityConfig.requiredFields.find((field) => field.name === key)
             if (field && (field.type.endsWith('[]') || field.type === 'JSON')) {

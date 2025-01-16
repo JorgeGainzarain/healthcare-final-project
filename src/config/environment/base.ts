@@ -9,6 +9,7 @@ import { Record, Record_Details, Test, Diagnosis, Prescription } from "../../app
 import { Department, Service } from "../../app/department/department.model";
 import {Appointment, Appointment_Details} from "../../app/appointment/appointment.model";
 import {Log} from "../../app/log/log.model";
+import {Notification} from "../../app/notification/notification.model";
 
 export const baseConfig: {
     port: number;
@@ -28,6 +29,7 @@ export const baseConfig: {
         record: EntityConfig<Record>;
         appointment: EntityConfig<Appointment>;
         appointment_details: EntityConfig<Appointment_Details>;
+        notification: EntityConfig<Notification>;
     };
 } = {
     port: 3000,
@@ -179,6 +181,16 @@ export const baseConfig: {
                 { name: 'date', type: 'DATE' },
                 { name: 'location', type: 'TEXT' },
                 { name: 'status', type: 'BOOLEAN' }
+            ]
+        },
+        notification: {
+            table_name: 'notifications',
+            unit: 'Notification',
+            requiredFields: [
+                { name: "title", type: 'TEXT' },
+                { name: 'user_ids', type: 'INTEGER[]' },
+                { name: 'message', type: 'TEXT' },
+                { name: 'timestamp', type: 'DATE' }
             ]
         }
     }
