@@ -49,13 +49,13 @@ export class AppointmentRepository extends BaseRepository<Appointment> {
     }
 
     async findByFields(fields: Partial<Appointment>): Promise<Appointment | undefined> {
-        return await super.findByFields({
-            patient_id: fields.patient_id,
-            doctor_id: fields.doctor_id,
-            appointment_details: {
-                status: fields.appointment_details?.status,
-            } as any
-        });
+        const searchFields: any = {};
+        if (fields.patient_id !== undefined) searchFields.patient_id = fields.patient_id;
+        if (fields.doctor_id !== undefined) searchFields.doctor_id = fields.doctor_id;
+        if (fields.appointment_details?.status !== undefined) {
+            searchFields.appointment_details = { status: fields.appointment_details.status };
+        }
+        return await super.findByFields(searchFields);
     }
 
 }

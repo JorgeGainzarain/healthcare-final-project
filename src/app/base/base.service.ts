@@ -5,6 +5,7 @@ import { EntityConfig } from "./base.model";
 import { StatusError } from "../../utils/status_error";
 import { BaseModel } from "./base.model";
 import { Log } from "../log/log.model";
+import {Session, SessionData} from "express-session";
 
 export enum ActionType {
     CREATE = 'create',
@@ -50,50 +51,70 @@ export abstract class BaseService<T extends BaseModel> {
         return result;
     }
 
-    async create(user_id: number, part_entity: Partial<T>): Promise<T> {
-        await this.before(ActionType.CREATE, [user_id, part_entity]);
+    async create(session: Session & Partial<SessionData>, part_entity: Partial<T>): Promise<T> {
+        const user_id = session.userId;
+        if (!user_id) {
+            throw new StatusError(401, 'User ID is missing');
+        }
+        await this.before(ActionType.CREATE, [session, part_entity]);
         let entity = validateObject(part_entity, this.entityConfig.requiredFields);
         const createdEntity = await this.repository.create(entity);
-        await this.after(ActionType.CREATE, createdEntity, [user_id, part_entity]);
+        await this.after(ActionType.CREATE, createdEntity, [session, part_entity]);
         await this.logAction(user_id, createdEntity, 'created');
         return createdEntity;
     }
 
-    async update(user_id: number, id: number, part_updates: Partial<T>): Promise<T> {
-        await this.before(ActionType.UPDATE, [user_id, id, part_updates]);
+    async update(session: Session & Partial<SessionData>, id: number, part_updates: Partial<T>): Promise<T> {
+        const user_id = session.userId;
+        if (!user_id) {
+            throw new StatusError(401, 'User ID is missing');
+        }
+        await this.before(ActionType.UPDATE, [session, id, part_updates]);
         validateRequiredParams({ id });
         validatePartialObject(part_updates, this.entityConfig.requiredFields);
         const updatedEntity = await this.repository.update(id, part_updates);
-        await this.after(ActionType.UPDATE, updatedEntity, [user_id, id, part_updates]);
+        await this.after(ActionType.UPDATE, updatedEntity, [session, id, part_updates]);
         await this.logAction(user_id, updatedEntity, 'updated');
         return updatedEntity;
     }
 
-    async delete(user_id: number, id: number): Promise<T> {
-        await this.before(ActionType.DELETE, [user_id, id]);
+    async delete(session: Session & Partial<SessionData>, id: number): Promise<T> {
+        const user_id = session.userId;
+        if (!user_id) {
+            throw new StatusError(401, 'User ID is missing');
+        }
+        await this.before(ActionType.DELETE, [session, id]);
         validateRequiredParams({ id });
         const deletedEntity = await this.repository.delete(id);
-        await this.after(ActionType.DELETE, deletedEntity, [user_id, id]);
+        await this.after(ActionType.DELETE, deletedEntity, [session, id]);
         await this.logAction(user_id, deletedEntity, 'deleted');
         return deletedEntity;
     }
 
-    async findById(user_id: number, id: number): Promise<T> {
-        await this.before(ActionType.VIEW, [user_id, id]);
+    async findById(session: Session & Partial<SessionData>, id: number): Promise<T> {
+        const user_id = session.userId;
+        if (!user_id) {
+            throw new StatusError(401, 'User ID is missing');
+        }
+        await this.before(ActionType.VIEW, [session, id]);
         validateRequiredParams({ id });
         let entity = await this.repository.findById(id);
         if (!entity) {
             throw new StatusError(404, `${this.entityConfig.unit} with id "${id}" not found.`);
         }
-        entity = await this.after(ActionType.VIEW, entity, [user_id, id]);
+        entity = await this.after(ActionType.VIEW, entity, [session, id]);
         await this.logAction(user_id, entity, 'retrieved');
         return entity;
     }
 
-    async findAll(user_id: number): Promise<T[]> {
-        await this.before(ActionType.VIEW_ALL, [user_id]);
+    async findAll(session: Session & Partial<SessionData>): Promise<T[]> {
+        const user_id = session.userId;
+        if (!user_id) {
+            throw new StatusError(401, 'User ID is missing');
+        }
+        await this.before(ActionType.VIEW_ALL, [session]);
         let entities = await this.repository.findAll();
-        entities = await this.after(ActionType.VIEW_ALL, entities, [user_id]);
+        entities = await this.after(ActionType.VIEW_ALL, entities, [session]);
         await this.logAction(user_id, entities, 'retrieved');
         return entities;
     }

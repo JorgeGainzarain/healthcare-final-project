@@ -1,19 +1,19 @@
 import { Container } from 'typedi';
 import { AppointmentRepository } from '../appointment.repository';
-import { SessionContext } from '../../../middleware/authentificate_JWT';
 import { StatusError } from '../../../utils/status_error';
 import { UserType } from '../../user/user.model';
+import {Appointment} from "../appointment.model";
 
 export async function validateView(role: string, args: any) {
-    const id = args[1];
-    const appointment = await Container.get(AppointmentRepository).findById(id);
+    const session = args[0];
+    const appointment = args[1] as Appointment;
     if (role === UserType.DOCTOR) {
-        if (appointment.doctor_id !== Container.get(SessionContext).doctorId) {
+        if (appointment.doctor_id !== session.doctorId) {
             throw new StatusError(403, 'You are not allowed to view appointments for another doctor');
         }
     }
     if (role === UserType.PATIENT) {
-        if (appointment.patient_id !== Container.get(SessionContext).patientId) {
+        if (appointment.patient_id !== session.patientId) {
             throw new StatusError(403, 'You are not allowed to view appointments for another patient');
         }
     }
