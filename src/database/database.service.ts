@@ -1,11 +1,13 @@
 import sqlite3 from 'sqlite3';
 import { Database, open } from 'sqlite';
-import { Service } from 'typedi';
+import {Service} from 'typedi';
 import { config } from '../config/environment';
 import path from 'path';
 import { DBQuery } from './models/db-query';
 import { DBQueryResult } from './models/db-query-result';
 import { EntityConfig } from '../app/base/base.model';
+import bcrypt from "bcrypt";
+import {UserType} from "../app/user/user.model";
 
 
 // Define the base directory as the project root
@@ -87,6 +89,19 @@ export class DatabaseService {
         )
       `;
       await this.db!.exec(createTableSQL);
+    }
+
+    const adminUsers = JSON.parse(process.env.ADMIN_USERS || '[]');
+    for (const user of adminUsers) {
+      // Cipher the password
+      const saltRounds = 10;
+      user.password = bcrypt.hashSync(user.password, saltRounds);
+      // Add the user to the database
+      const queryDoc = {
+        sql: `INSERT INTO users (username, password, role) VALUES (?, ?, ?)`,
+        params: [user.username, user.password, UserType.ADMIN]
+      }
+      await this.execQuery(queryDoc);
     }
 
     await this.closeDatabase();
