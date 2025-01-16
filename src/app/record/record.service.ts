@@ -5,7 +5,7 @@ import {config} from "../../config/environment";
 import {RecordRepository} from "./record.repository";
 import {LogService} from "../log/log.service";
 import {Container, Service} from "typedi";
-import {SessionContext} from "../../middleware/authentificate_JWT";
+import {Session, SessionData } from "express-session";
 
 import { validateView } from './validations/validateView';
 import { validateCreate } from './validations/validateCreate';
@@ -24,28 +24,30 @@ export class RecordService extends  BaseService<Record> {
         super(recordRepository, auditService);
     }
 
-    async findAll(user_id: number): Promise<Record[]> {
+    async findAll(session: Session & Partial<SessionData>): Promise<Record[]> {
+        const user_id = session.userId;
         let records = await this.recordRepository.findAll();
-        const role = Container.get(SessionContext).role;
+        const role = session.role;
         if (!role) {
             throw new StatusError(403, 'You must be logged in to perform this action');
         }
         if (role !== UserType.ADMIN) {
             records = records.filter(record => {
                 if (role === UserType.DOCTOR) {
-                    return record.doctor_id === Container.get(SessionContext).doctorId;
+                    return record.doctor_id === session.doctorId;
                 }
                 if (role === UserType.PATIENT) {
-                    return record.patient_id === Container.get(SessionContext).patientId;
+                    return record.patient_id === session.patientId;
                 }
             });
         }
-        await this.logAction(user_id, records, 'retrieved');
+        await this.logAction(user_id!, records, 'retrieved');
         return records;
     }
 
     async before(action: ActionType, args: any[]) {
-        const role = Container.get(SessionContext).role;
+        const session = args[0] as Session & Partial<SessionData>;
+        const role = session.role;
         if (!role) {
             throw new StatusError(403, 'You must be logged in to perform this action');
         }

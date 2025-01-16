@@ -5,7 +5,6 @@ import {config} from "../../config/environment";
 import {DepartmentRepository} from "./department.repository";
 import {LogService} from "../log/log.service";
 import {Container, Service} from "typedi";
-import {SessionContext} from "../../middleware/authentificate_JWT";
 import {UserType} from "../user/user.model";
 import {StatusError} from "../../utils/status_error";
 
@@ -21,7 +20,8 @@ export class DepartmentService extends  BaseService<Department> {
     }
 
     async before(action: ActionType, args: any): Promise<any> {
-        const role = Container.get(SessionContext).role;
+        const session = args[0];
+        const role = session.role;
         if (action == ActionType.CREATE) {
             if (role !== UserType.ADMIN) {
                 throw new StatusError(403, 'Only admins can create departments');

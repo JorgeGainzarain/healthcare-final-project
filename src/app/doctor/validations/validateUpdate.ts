@@ -1,11 +1,13 @@
 import {UserType} from "../../user/user.model";
 import {StatusError} from "../../../utils/status_error";
 import {Container} from "typedi";
-import {SessionContext} from "../../../middleware/authentificate_JWT";
+import {Session, SessionData} from "express-session";
 
-export async function validateUpdate(role: string, args: any) {
+export async function validateUpdate(args: any) {
+    const session = args[0] as Session & SessionData;
+    const role = session.role;
     const id = args[1];
-    const doctor_id = Container.get(SessionContext).doctorId;
+    const doctor_id = session.doctorId;
     if (role === UserType.PATIENT) {
         throw new StatusError(403, 'Patients are not allowed to update doctors');
     }

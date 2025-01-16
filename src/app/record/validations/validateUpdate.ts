@@ -2,14 +2,14 @@ import {UserType} from "../../user/user.model";
 import {StatusError} from "../../../utils/status_error";
 import {Container} from "typedi";
 import {RecordRepository} from "../record.repository";
-import {SessionContext} from "../../../middleware/authentificate_JWT";
 
 
 export async function validateUpdate(role: string, args: any) {
+    const session = args[0];
     const part_updates = args[2];
     const id = args[1];
     const record = await Container.get(RecordRepository).findById(id);
-    const doctor_id = Container.get(SessionContext).doctorId;
+    const doctor_id = session.doctorId;
     if (role !== UserType.DOCTOR) {
         throw new StatusError(403, 'Only doctors can update records');
     }

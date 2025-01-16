@@ -10,24 +10,6 @@ import { UserType } from '../app/user/user.model';
 
 dotenv.config();
 
-// src/context/session_context.ts
-import { Service } from 'typedi';
-
-@Service()
-export class SessionContext {
-    userId?: number;
-    role?: string;
-    patientId?: number;
-    doctorId?: number;
-
-    setSessionData(userId: number, role: string, patientId?: number, doctorId?: number) {
-        this.userId = userId;
-        this.role = role;
-        this.patientId = patientId;
-        this.doctorId = doctorId;
-    }
-}
-
 const publicRoutes = [
     '/login',
     '/register',
@@ -71,7 +53,6 @@ export async function authenticateJWT(req: Request, _res: Response, _next: NextF
 export async function validateUser(req: Request, _res: Response, _next: NextFunction) {
     const patientRepository = Container.get(PatientRepository);
     const doctorRepository = Container.get(DoctorRepository);
-    const sessionContext = Container.get(SessionContext);
 
     const userId = req.session.userId;
     if (!userId) {
@@ -83,14 +64,20 @@ export async function validateUser(req: Request, _res: Response, _next: NextFunc
     const doctor = await doctorRepository.findByFields({ user_id: userId });
 
     if (patient) {
-        sessionContext.setSessionData(userId, UserType.PATIENT, patient.id);
+        req.session.patientId = patient.id;
+        req.session.role = UserType.PATIENT;
+        req.session.doctorId = undefined;
     } else if (doctor) {
-        sessionContext.setSessionData(userId, UserType.DOCTOR, undefined, doctor.id);
+        req.session.doctorId = doctor.id;
+        req.session.role = UserType.DOCTOR;
+        req.session.patientId = undefined;
     } else {
-        sessionContext.setSessionData(userId, UserType.ADMIN);
+        req.session.patientId = undefined;
+        req.session.role = UserType.ADMIN;
+        req.session.doctorId = undefined;
     }
 
-    if (sessionContext.role !== UserType.ADMIN && req.path.includes('/log')) {
+    if (req.session.role !== UserType.ADMIN && req.path.includes('/log')) {
         throw new StatusError(403, 'You do not have permission to access this resource');
     }
 
