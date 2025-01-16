@@ -1,10 +1,13 @@
-import {BaseService} from "../base/base.service";
+import {ActionType, BaseService} from "../base/base.service";
 import {Department} from "./department.model";
 import {EntityConfig} from "../base/base.model";
 import {config} from "../../config/environment";
 import {DepartmentRepository} from "./department.repository";
 import {LogService} from "../log/log.service";
-import {Service} from "typedi";
+import {Container, Service} from "typedi";
+import {SessionContext} from "../../middleware/authentificate_JWT";
+import {UserType} from "../user/user.model";
+import {StatusError} from "../../utils/status_error";
 
 @Service()
 export class DepartmentService extends  BaseService<Department> {
@@ -15,6 +18,25 @@ export class DepartmentService extends  BaseService<Department> {
         protected auditService: LogService
     ) {
         super(departmentRepository, auditService);
+    }
+
+    async before(action: ActionType, args: any): Promise<any> {
+        const role = Container.get(SessionContext).role;
+        if (action == ActionType.CREATE) {
+            if (role !== UserType.ADMIN) {
+                throw new StatusError(403, 'Only admins can create departments');
+            }
+        }
+        if (action == ActionType.UPDATE) {
+            if (role !== UserType.ADMIN) {
+                throw new StatusError(403, 'Only admins can update departments');
+            }
+        }
+        if (action == ActionType.DELETE) {
+            if (role !== UserType.ADMIN) {
+                throw new StatusError(403, 'Only admins can delete departments');
+            }
+        }
     }
 
 }

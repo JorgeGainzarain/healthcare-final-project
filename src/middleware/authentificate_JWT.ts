@@ -30,7 +30,8 @@ export class SessionContext {
 
 const publicRoutes = [
     '/login',
-    '/register'
+    '/register',
+    '/department'
 ];
 
 export async function authenticate(req: Request, res: Response, next: NextFunction) {
