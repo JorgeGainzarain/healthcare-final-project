@@ -22,7 +22,7 @@ export class UserController extends BaseController<User | Patient | Doctor_Priva
     }
 
     async register(req: Request, res: Response, next: NextFunction): Promise<void> {
-        return this.userService.register(req.body)
+        return this.userService.register(req.session, req.body)
             .then((entity: Omit<User, 'password'>) => {
                 res.status(201).json(createResponse('success', 'registration successful', entity));
             })

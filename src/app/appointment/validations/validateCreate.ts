@@ -1,20 +1,20 @@
 import { Container } from 'typedi';
 import { PatientRepository } from '../../patient/patient.repository';
 import { DoctorRepository } from '../../doctor/doctor.repository';
-import { SessionContext } from '../../../middleware/authentificate_JWT';
 import { StatusError } from '../../../utils/status_error';
 import { UserType } from '../../user/user.model';
 import moment from 'moment';
 import { DoctorAvailability } from '../../doctor/doctor.model';
 
 export async function validateCreate(role: string, args: any) {
+    const session = args[0];
     const part_entity = args[1];
 
     if (role === UserType.DOCTOR) {
         throw new StatusError(403, 'Doctors are not allowed to create appointments');
     }
     if (role === UserType.PATIENT) {
-        if (part_entity.patient_id !== Container.get(SessionContext).patientId) {
+        if (part_entity.patient_id !== session.patientId) {
             throw new StatusError(403, 'You are not allowed to create an appointment for another patient');
         }
     }
