@@ -36,6 +36,23 @@ export class AppointmentService extends BaseService<Appointment> {
         return updatedAppointment;
     }
 
+    async findAll(user_id: number): Promise<Appointment[]> {
+        let appointments = await this.appointmentRepository.findAll();
+        if (Container.get(SessionContext).role !== UserType.ADMIN) {
+            appointments = appointments.filter(appointment => {
+                try {
+                    validateView(UserType.PATIENT, [user_id, appointment.id]);
+                    return true;
+                }
+                catch (e) {
+                    return false;
+                }
+            });
+        }
+        await this.logAction(user_id, appointments, 'retrieved');
+        return appointments;
+    }
+
     async before(action: ActionType, args: any[]) {
         const role = Container.get(SessionContext).role;
         if (!role) {
@@ -45,7 +62,7 @@ export class AppointmentService extends BaseService<Appointment> {
             return;
         }
         switch (action) {
-            case ActionType.VIEW || ActionType.VIEW_ALL:
+            case ActionType.VIEW :
                 await validateView(role, args);
                 break;
             case ActionType.CREATE:
