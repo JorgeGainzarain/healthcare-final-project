@@ -310,7 +310,7 @@ describe('BaseController Unit Tests', () => {
     describe('GetById', () => {
         it('successfully retrieves an entity by id', async () => {
             // Arrange
-            (service.getById as jest.Mock).mockResolvedValue(mockEntity);
+            (service.findById as jest.Mock).mockResolvedValue(mockEntity);
 
             // Act
             await controller.getById(req as Request, res as Response, next);
@@ -323,7 +323,7 @@ describe('BaseController Unit Tests', () => {
              * - The controller should call the response utility with the correct arguments
              * - The controller should not call the next middleware
              */
-            expect(service.getById).toHaveBeenCalledWith(1);
+            expect(service.findById).toHaveBeenCalledWith(1);
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalled();
             expect(createResponseSpy).toHaveBeenCalledWith(
@@ -344,7 +344,7 @@ describe('BaseController Unit Tests', () => {
             for (const error of errorScenarios) {
                 // Reset mock for each scenario
                 jest.clearAllMocks();
-                (service.getById as jest.Mock).mockRejectedValueOnce(error);
+                (service.findById as jest.Mock).mockRejectedValueOnce(error);
 
                 // Act
                 await controller.getById(req as Request, res as Response, next);
@@ -357,7 +357,7 @@ describe('BaseController Unit Tests', () => {
                  * - The controller should call the next middleware with the error
                  *   Note: The error handler middleware will handle the response status and message
                  */
-                expect(service.getById).toHaveBeenCalledWith(1);
+                expect(service.findById).toHaveBeenCalledWith(1);
                 expect(responseUtil.createResponse).not.toHaveBeenCalled();
                 expect(res.status).not.toHaveBeenCalled();
                 expect(res.json).not.toHaveBeenCalled();
