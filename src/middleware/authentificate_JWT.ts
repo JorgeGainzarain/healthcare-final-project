@@ -88,4 +88,8 @@ export async function validateUser(req: Request, _res: Response, _next: NextFunc
         sessionContext.setSessionData(userId, UserType.ADMIN);
     }
 
+    if (sessionContext.role !== UserType.ADMIN && req.path.includes('/log')) {
+        throw new StatusError(403, 'You do not have permission to access this resource');
+    }
+
 }
