@@ -9,7 +9,7 @@ import {Patient} from "../patient/patient.model";
 export abstract class BaseRepository<T extends BaseModel> {
     protected abstract entityConfig: EntityConfig<T>;
 
-    protected constructor(
+    constructor(
         protected readonly databaseService: DatabaseService
     ) {}
 

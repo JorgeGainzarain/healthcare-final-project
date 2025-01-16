@@ -14,11 +14,8 @@ export const test = {
       table_name: 'test_entities',
       unit: 'TestEntity',
       requiredFields: [
-        { name: 'field1', type: 'TEXT' },
-        { name: 'field2', type: 'INTEGER' },
-        { name: 'field3', type: 'BOOLEAN' }
-      ],
-      defaultEntity: { field1: 'test1', field2: 2, field3: true }
+        { name: 'name', type: 'TEXT' },
+      ]
     }
   }
 };

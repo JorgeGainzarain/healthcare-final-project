@@ -16,12 +16,12 @@ export enum ActionType {
 }
 
 export abstract class BaseService<T extends BaseModel> {
-    protected constructor(
+    protected abstract entityConfig: EntityConfig<T>;
+
+    constructor(
         protected readonly repository: BaseRepository<T>,
         protected logService?: LogService,
     ) {}
-
-    protected abstract entityConfig: EntityConfig<T>;
 
     async logAction(user_id: number, entity: T | T[], action: string): Promise<void> {
         if (Array.isArray(entity)) {
