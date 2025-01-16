@@ -9,7 +9,6 @@ import {SessionContext} from "../../middleware/authentificate_JWT";
 
 import { validateView } from './validations/validateView';
 import { validateCreate } from './validations/validateCreate';
-import { validateCancel } from './validations/validateCancel';
 import { validateUpdate } from './validations/validateUpdate';
 import {UserType} from "../user/user.model";
 import {StatusError} from "../../utils/status_error";
@@ -50,6 +49,7 @@ export class RecordService extends  BaseService<Record> {
         if (!role) {
             throw new StatusError(403, 'You must be logged in to perform this action');
         }
+        // Admins have full access
         if (role === UserType.ADMIN) {
             return;
         }
@@ -59,9 +59,6 @@ export class RecordService extends  BaseService<Record> {
                 break;
             case ActionType.CREATE:
                 await validateCreate(role, args);
-                break;
-            case ActionType.DELETE:
-                await validateCancel(role, args);
                 break;
             case ActionType.UPDATE:
                 await validateUpdate(role, args);
