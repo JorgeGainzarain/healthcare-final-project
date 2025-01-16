@@ -114,7 +114,7 @@ export abstract class BaseRepository<T extends BaseModel> {
         // iterate over the Patient fields and parse the JSON or [] fields
         Object.keys(patient).forEach((key: string) => {
             let field = this.entityConfig.requiredFields.find((field) => field.name === key)
-            if (field && (field.type.endsWith('[]') || field.type === 'JSON' || field.type === 'DATE')) {
+            if (field && (field.type.endsWith('[]') || field.type === 'JSON')) {
                 const fieldKey = key as keyof Partial<Patient>;
                 if (typeof patient[fieldKey] === 'string') {
                     patient[fieldKey] = JSON.parse(patient[fieldKey]) as any;

@@ -1,0 +1,20 @@
+meta {
+  name: reschedule
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://localhost:3000/api/{{entity}}/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "appointment_details": {
+      "date": "2025-01-14T00:00:00.000Z"
+    }
+  }
+  
+}

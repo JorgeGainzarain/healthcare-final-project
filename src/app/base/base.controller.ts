@@ -51,7 +51,7 @@ export abstract class BaseController<T extends BaseModel> {
     }
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
-        return this.service.getAll(req.session.userId ?? 0)
+        return this.service.findAll(req.session.userId ?? 0)
             .then((entities: T[]) => {
                 res.status(200).json(createResponse('success', this.entityConfig.unit + ' retrieved successfully', entities));
             })
