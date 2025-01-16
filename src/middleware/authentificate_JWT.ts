@@ -31,7 +31,8 @@ export class SessionContext {
 const publicRoutes = [
     '/login',
     '/register',
-    '/department'
+    '/department',
+    '/doctor',
 ];
 
 export async function authenticate(req: Request, res: Response, next: NextFunction) {
