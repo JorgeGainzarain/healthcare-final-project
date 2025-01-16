@@ -22,19 +22,22 @@ export class UserService extends BaseService<User | Patient | Doctor_Private> {
     protected entityConfig = config.entityValues.user;
 
     constructor(
-        protected auditService: LogService,
+        protected logService: LogService,
         protected userRepository: UserRepository,
 
         protected patientService: PatientService,
         protected doctorService: DoctorService
     ) {
-        super(userRepository, auditService);
+        super(userRepository, logService);
         this.patientService = patientService;
         this.doctorService = doctorService;
     }
 
     public async register(part_user: Partial<User>): Promise<Omit<User, 'password'>> {
         const userFull = validateObject(part_user, this.entityConfig.requiredFields)
+
+        // Create Patient or Doctor object if user is of type Patient or Doctor
+        this.validateUser(userFull);
 
         // Parse user object only with the required fields
         const user = { username: userFull.username, password: userFull.password, role: userFull.role } as User;
@@ -44,10 +47,8 @@ export class UserService extends BaseService<User | Patient | Doctor_Private> {
         const createdUser = await this.userRepository.create(user);
         const { password, ...userWithoutPassword } = createdUser;
 
-        // Create Patient or Doctor object if user is of type Patient or Doctor
-        this.validateUser(userFull);
         // Remove password and username fields from the user object
-        const { username, role, password: pass, ...userWithoutPasswordAndUser } = userFull;
+        const { username, role, password: pass, ...userWithoutPasswordAndUser } = { ...userFull, user_id: createdUser.id };
         if (user.role.toUpperCase() === UserType.PATIENT) {
             await this.patientService.create( userWithoutPasswordAndUser.id?? 0, userWithoutPasswordAndUser);
         } else if (user.role.toUpperCase() === UserType.DOCTOR) {
@@ -82,7 +83,7 @@ export class UserService extends BaseService<User | Patient | Doctor_Private> {
             details: JSON.stringify(user),
             user_id: user.id
         } as Log;
-        await this.auditService.createLog(log);
+        await this.logService.createLog(log);
     }
 
     private validateUser(user: User): User | Patient | Doctor_Private {
