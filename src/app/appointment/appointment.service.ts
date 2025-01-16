@@ -9,6 +9,7 @@ import {Container, Service} from 'typedi';
 import {SessionContext} from "../../middleware/authentificate_JWT";
 import {StatusError} from "../../utils/status_error";
 import {UserType} from "../user/user.model";
+import {validateObject} from "../../utils/validation";
 
 @Service()
 export class AppointmentService extends BaseService<Appointment> {
@@ -26,7 +27,7 @@ export class AppointmentService extends BaseService<Appointment> {
         return super.create(user_id, part_entity);
     }
 
-    @validateAuth('reschedule')
+    @validateAuth('update')
     async update(user_id: number, id: number, part_updates: Partial<Appointment>): Promise<Appointment> {
         return super.update(user_id, id, part_updates);
     }
@@ -43,7 +44,7 @@ export class AppointmentService extends BaseService<Appointment> {
 
 }
 
-function validateAuth(action: 'view' | 'create' | 'cancel' | 'reschedule') {
+function validateAuth(action: 'view' | 'create' | 'cancel' | 'update') {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const originalMethod = descriptor.value;
 
@@ -55,41 +56,76 @@ function validateAuth(action: 'view' | 'create' | 'cancel' | 'reschedule') {
 
             const part_entity = args[1];
             const role = sessionContext.role;
-
-
-            if (action === 'view') {
-                if (role === UserType.DOCTOR && part_entity.patient_id !== sessionContext.patientId) {
-                    throw new StatusError(403, 'You are not allowed to view appointments for another patient');
-                }
-                if (role === UserType.DOCTOR && part_entity.doctor_id !== sessionContext.doctorId) {
-                    throw new StatusError(403, 'You are not allowed to view appointments for another doctor');
-                }
-            } else if (action === 'create') {
-                if (role === UserType.DOCTOR) {
-                    throw new StatusError(403, 'Doctors are not allowed to create appointments');
-                }
-                if (role === UserType.PATIENT && part_entity.patient_id !== sessionContext.patientId) {
-                    throw new StatusError(403, 'You are not allowed to create an appointment for another patient');
-                }
-            } else if (action === 'cancel') {
-                if (role === UserType.DOCTOR) {
-                    throw new StatusError(403, 'Doctors are not allowed to cancel appointments');
-                }
-                if (role === UserType.PATIENT && part_entity.patient_id !== sessionContext.patientId) {
-                    throw new StatusError(403, 'You are not allowed to cancel an appointment for another patient');
-                }
-            } else if (action === 'reschedule') {
-                if (role === UserType.PATIENT && part_entity.patient_id !== sessionContext.patientId) {
-                    throw new StatusError(403, 'You are not allowed to reschedule an appointment for another patient');
-                }
-                if (role === UserType.DOCTOR && part_entity.doctor_id !== sessionContext.doctorId) {
-                    throw new StatusError(403, 'You are not allowed to reschedule an appointment for another doctor');
-                }
+            if (!role) {
+                throw new StatusError(403, 'You are not authorized to perform this action');
             }
+
+            await validateAction(action, role, part_entity, args);
 
             return await originalMethod.apply(this, args);
         };
 
         return descriptor;
     };
+}
+
+async function validateAction(action: 'view' | 'create' | 'cancel' | 'update', role: string, part_entity: any, args: any[]) {
+    switch (action) {
+        case 'view':
+            await validateView(role, part_entity);
+            break;
+        case 'create':
+            await validateCreate(role, part_entity);
+            break;
+        case 'cancel':
+            await validateCancel(role, part_entity);
+            break;
+        case 'update':
+            await validateUpdate(role, part_entity, args[2]);
+            break;
+    }
+}
+
+async function validateView(role: string, part_entity: any) {
+    if (role === UserType.DOCTOR) {
+        if (part_entity.patient_id !== Container.get(SessionContext).patientId) {
+            throw new StatusError(403, 'You are not allowed to view appointments for another patient');
+        }
+        if (part_entity.doctor_id !== Container.get(SessionContext).doctorId) {
+            throw new StatusError(403, 'You are not allowed to view appointments for another doctor');
+        }
+    }
+}
+
+async function validateCreate(role: string, part_entity: any) {
+    if (role === UserType.DOCTOR) {
+        throw new StatusError(403, 'Doctors are not allowed to create appointments');
+    }
+    if (role === UserType.PATIENT && part_entity.patient_id !== Container.get(SessionContext).patientId) {
+        throw new StatusError(403, 'You are not allowed to create an appointment for another patient');
+    }
+}
+
+async function validateCancel(role: string, part_entity: any) {
+    if (role === UserType.DOCTOR) {
+        throw new StatusError(403, 'Doctors are not allowed to cancel appointments');
+    }
+    if (role === UserType.PATIENT && part_entity.patient_id !== Container.get(SessionContext).patientId) {
+        throw new StatusError(403, 'You are not allowed to cancel an appointment for another patient');
+    }
+}
+
+async function validateUpdate(role: string, part_entity: any, part_updates: any) {
+    if (!part_updates || !validateObject(part_updates, [{ name: 'date', type: 'TEXT' }])) {
+        throw new StatusError(400, 'Invalid appointment reschedule request');
+    }
+    if (role === UserType.PATIENT && part_entity.patient_id !== Container.get(SessionContext).patientId) {
+        throw new StatusError(403, 'You are not allowed to reschedule an appointment for another patient');
+    }
+    if (role === UserType.DOCTOR && part_entity.doctor_id !== Container.get(SessionContext).doctorId) {
+        throw new StatusError(403, 'You are not allowed to reschedule an appointment for another doctor');
+    }
+    if (part_updates.date < new Date().toISOString()) {
+        throw new StatusError(400, 'You cannot reschedule an appointment to a past date');
+    }
 }
