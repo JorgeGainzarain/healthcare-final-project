@@ -6,7 +6,6 @@ import {config} from '../../config/environment';
 import {AppointmentRepository} from './appointment.repository';
 import {LogService} from '../log/log.service';
 import {Container, Service} from 'typedi';
-import {SessionContext} from "../../middleware/authentificate_JWT";
 import {StatusError} from "../../utils/status_error";
 import {UserType} from "../user/user.model";
 
@@ -14,6 +13,7 @@ import { validateView } from './validations/validateView';
 import { validateCreate } from './validations/validateCreate';
 import { validateCancel } from './validations/validateCancel';
 import { validateUpdate } from './validations/validateUpdate';
+import {Session, SessionData } from "express-session";
 
 @Service()
 export class AppointmentService extends BaseService<Appointment> {
@@ -26,22 +26,24 @@ export class AppointmentService extends BaseService<Appointment> {
         super(appointmentRepository, auditService);
     }
 
-    async delete(userId: number, id: number): Promise<Appointment> {
-        await this.before(ActionType.DELETE, [userId, id]);
+    async delete(session: Session & Partial<SessionData>, id: number): Promise<Appointment> {
+        const userId = session.userId;
+        await this.before(ActionType.DELETE, [session, id]);
         // Modify the appointment status to cancelled
         const appointment = await this.appointmentRepository.findById(id);
         appointment.appointment_details.status = false;
         const updatedAppointment = await this.appointmentRepository.update(id, appointment);
-        await this.logAction(userId, updatedAppointment, 'deleted');
+        await this.logAction(userId!, updatedAppointment, 'deleted');
         return updatedAppointment;
     }
 
-    async findAll(user_id: number): Promise<Appointment[]> {
+    async findAll(session: Session & Partial<SessionData>): Promise<Appointment[]> {
+        const user_id = session.userId;
         let appointments = await this.appointmentRepository.findAll();
-        if (Container.get(SessionContext).role !== UserType.ADMIN) {
-            appointments = appointments.filter(appointment => {
+        if (session.role !== UserType.ADMIN) {
+            appointments = appointments.filter(async (appointment) => {
                 try {
-                    validateView(UserType.PATIENT, [user_id, appointment.id]);
+                    await validateView(UserType.PATIENT, [session, appointment]);
                     return true;
                 }
                 catch (e) {
@@ -49,12 +51,13 @@ export class AppointmentService extends BaseService<Appointment> {
                 }
             });
         }
-        await this.logAction(user_id, appointments, 'retrieved');
+        await this.logAction(user_id!, appointments, 'retrieved');
         return appointments;
     }
 
     async before(action: ActionType, args: any[]) {
-        const role = Container.get(SessionContext).role;
+        const session = args[0];
+        const role = session.role;
         if (!role) {
             throw new StatusError(403, 'You must be logged in to perform this action');
         }
@@ -63,6 +66,7 @@ export class AppointmentService extends BaseService<Appointment> {
         }
         switch (action) {
             case ActionType.VIEW :
+                args[1] = await this.appointmentRepository.findById(args[1]);
                 await validateView(role, args);
                 break;
             case ActionType.CREATE:

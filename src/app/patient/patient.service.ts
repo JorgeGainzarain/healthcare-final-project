@@ -8,11 +8,11 @@ import {Container, Service} from "typedi";
 
 import {validateUpdate} from "./validations/validateUpdate";
 import {validateView} from "./validations/validateView";
-import {SessionContext} from "../../middleware/authentificate_JWT";
 import {UserType} from "../user/user.model";
 import {StatusError} from "../../utils/status_error";
 import {RecordRepository} from "../record/record.repository";
 import {AppointmentRepository} from "../appointment/appointment.repository";
+import {Session, SessionData } from "express-session";
 
 @Service()
 export class PatientService extends  BaseService<Patient> {
@@ -25,8 +25,8 @@ export class PatientService extends  BaseService<Patient> {
         super(patientRepository, auditService);
     }
 
-    async findAll(user_id: number): Promise<Patient[]> {
-        const role = Container.get(SessionContext).role;
+    async findAll(session: Session & SessionData): Promise<Patient[]> {
+        const role = session.role;
         if (!role) {
             throw new StatusError(403, 'You must be logged in to perform this action');
         }
@@ -35,8 +35,7 @@ export class PatientService extends  BaseService<Patient> {
         }
 
         let patients: Patient[] = await this.patientRepository.findAll();
-        const doctor_id = Container.get(SessionContext).doctorId;
-
+        const doctor_id = session.doctorId;
 
         const recordRepository = Container.get(RecordRepository);
         const appointmentRepository = Container.get(AppointmentRepository);
@@ -47,18 +46,22 @@ export class PatientService extends  BaseService<Patient> {
             for (let i = 0; i < patients.length; i++) {
                 const record = await recordRepository.exists({patient_id: patients[i].id, doctor_id: doctor_id});
                 const appointment = await appointmentRepository.exists({patient_id: patients[i].id, doctor_id: doctor_id});
+                console.log('Doctor ' + doctor_id + ' trying to access patient ' + patients[i].id);
+                console.log('Record: ' + record + ' Appointment: ' + appointment);
                 if (record || appointment) {
                     aux_patients[i] = patients[i];
                 }
             }
 
         }
-        await this.logAction(user_id, aux_patients, 'retrieved');
+
+        await this.logAction(session.userId, aux_patients, 'retrieved');
         return aux_patients;
     }
 
     async before(action: ActionType, args: any) {
-        const role = Container.get(SessionContext).role;
+        const session = args[0] as Session & SessionData;
+        const role = session.role;
         if (!role) {
             throw new StatusError(401, 'Access token is missing or invalid');
         }
@@ -67,10 +70,10 @@ export class PatientService extends  BaseService<Patient> {
         }
         switch (action) {
             case ActionType.UPDATE:
-                await validateUpdate(role, args);
+                await validateUpdate(args);
                 break;
             case ActionType.VIEW:
-                await validateView(role, args);
+                await validateView(args);
                 break
         }
     }

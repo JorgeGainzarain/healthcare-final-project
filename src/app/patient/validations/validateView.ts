@@ -3,20 +3,22 @@ import { PatientRepository } from "../patient.repository";
 import { RecordRepository } from "../../record/record.repository";
 import { AppointmentRepository} from "../../appointment/appointment.repository";
 import {UserType} from "../../user/user.model";
-import {SessionContext} from "../../../middleware/authentificate_JWT";
 import {StatusError} from "../../../utils/status_error";
+import {Session, SessionData} from "express-session";
 
-export async function validateView(role: string, args: any) {
+export async function validateView(args: any) {
+    const session = args[0] as Session & SessionData;
     const id = args[1];
+    const role = session.role;
 
     if (role == UserType.PATIENT) {
-        const patient_id = Container.get(SessionContext).patientId;
+        const patient_id = session.patientId;
         if (patient_id !== id) {
             throw new StatusError(403, 'You are not allowed to view another patient');
         }
     }
     if (role == UserType.DOCTOR) {
-        const doctor_id = Container.get(SessionContext).doctorId;
+        const doctor_id = session.doctorId;
         const patientRepository = Container.get(PatientRepository);
         const patient = await patientRepository.findById(id);
         if (!patient) {

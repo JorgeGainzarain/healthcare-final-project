@@ -12,8 +12,9 @@ import {validateObject} from "../../utils/validation";
 import {Log} from 'app/log/log.model';
 import {Patient} from "../patient/patient.model";
 import {Doctor_Private} from "../doctor/doctor.model";
-import {PatientService} from "../patient/patient.service";
-import {DoctorService} from "../doctor/doctor.service";
+import {Session, SessionData} from "express-session";
+import {PatientRepository} from "../patient/patient.repository";
+import {DoctorRepository} from "../doctor/doctor.repository";
 
 dotenv.config();
 
@@ -25,15 +26,15 @@ export class UserService extends BaseService<User | Patient | Doctor_Private> {
         protected logService: LogService,
         protected userRepository: UserRepository,
 
-        protected patientService: PatientService,
-        protected doctorService: DoctorService
+        protected patientRepository: PatientRepository,
+        protected doctorRepository: DoctorRepository
     ) {
         super(userRepository, logService);
-        this.patientService = patientService;
-        this.doctorService = doctorService;
+        this.patientRepository = patientRepository;
+        this.doctorRepository = doctorRepository;
     }
 
-    public async register(part_user: Partial<User>): Promise<Omit<User, 'password'>> {
+    public async register(session: Session & Partial<SessionData>, part_user: Partial<User>): Promise<Omit<User, 'password'>> {
         const userFull = validateObject(part_user, this.entityConfig.requiredFields)
 
         // Create Patient or Doctor object if user is of type Patient or Doctor
@@ -49,10 +50,18 @@ export class UserService extends BaseService<User | Patient | Doctor_Private> {
 
         // Remove password and username fields from the user object
         const { username, role, password: pass, ...userWithoutPasswordAndUser } = { ...userFull, user_id: createdUser.id };
+        session.userId = userWithoutPasswordAndUser.id?? 0;
+
         if (user.role.toUpperCase() === UserType.PATIENT) {
-            await this.patientService.create( userWithoutPasswordAndUser.id?? 0, userWithoutPasswordAndUser);
+            await this.patientRepository.create({
+                ...userWithoutPasswordAndUser,
+                user_id: createdUser.id
+            } as Patient);
         } else if (user.role.toUpperCase() === UserType.DOCTOR) {
-            await this.doctorService.create( userWithoutPasswordAndUser.id?? 0, userWithoutPasswordAndUser);
+            await this.doctorRepository.create({
+                ...userWithoutPasswordAndUser,
+                user_id: createdUser.id
+            } as Doctor_Private);
         }
 
         await this.logUserAction({ ...userWithoutPassword } as User , 'registered');

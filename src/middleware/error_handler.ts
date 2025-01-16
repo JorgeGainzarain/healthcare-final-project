@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusError } from '../utils/status_error';
 
 export function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction): void {
+    console.error(err);
     if (err instanceof SyntaxError && 'body' in err) {
         res.status(400).json({ error: 'Invalid JSON format' });
     } else if (err instanceof StatusError) {

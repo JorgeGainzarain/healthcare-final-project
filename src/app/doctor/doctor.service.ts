@@ -5,10 +5,10 @@ import {config} from "../../config/environment";
 import {DoctorRepository} from "./doctor.repository";
 import {LogService} from "../log/log.service";
 import {Container, Service} from "typedi";
-import {SessionContext} from "../../middleware/authentificate_JWT";
 import {StatusError} from "../../utils/status_error";
 import {UserType} from "../user/user.model";
 import {validateUpdate} from "./validations/validateUpdate";
+import {Session, SessionData} from "express-session";
 
 @Service()
 export class DoctorService extends  BaseService<Doctor_Private | Doctor_Public> {
@@ -23,8 +23,9 @@ export class DoctorService extends  BaseService<Doctor_Private | Doctor_Public> 
 
 
     async after(action: ActionType, result: any, args: any[]) {
+        const session = args[0] as Session & SessionData;
         const id = args[1];
-        const role = Container.get(SessionContext).role;
+        const role = session.role;
         if (!role) {
             throw new StatusError(403, 'You are not allowed to perform this action');
         }
@@ -32,7 +33,7 @@ export class DoctorService extends  BaseService<Doctor_Private | Doctor_Public> 
             return result
         }
         if (role === UserType.DOCTOR) {
-            const doctor_id = Container.get(SessionContext).doctorId;
+            const doctor_id = session.doctorId;
             if (id !== doctor_id) {
                 throw new StatusError(403, 'You are not allowed to view another doctor');
             }
@@ -65,7 +66,8 @@ export class DoctorService extends  BaseService<Doctor_Private | Doctor_Public> 
     }
 
     async before(action: ActionType, args: any) {
-        const role = Container.get(SessionContext).role;
+        const session = args[0] as Session & SessionData;
+        const role = session.role;
         if (!role) {
             throw new StatusError(403, 'You are not allowed to perform this action');
         }
@@ -74,7 +76,7 @@ export class DoctorService extends  BaseService<Doctor_Private | Doctor_Public> 
         }
         switch (action) {
             case ActionType.UPDATE:
-                await validateUpdate(role, args);
+                await validateUpdate(args);
                 break;
         }
     }
