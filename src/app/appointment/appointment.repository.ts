@@ -47,4 +47,15 @@ export class AppointmentRepository extends BaseRepository<Appointment> {
         this.parseFields(appointment);
         return appointment;
     }
+
+    async findByFields(fields: Partial<Appointment>): Promise<Appointment | undefined> {
+        return await super.findByFields({
+            patient_id: fields.patient_id,
+            doctor_id: fields.doctor_id,
+            appointment_details: {
+                status: fields.appointment_details?.status,
+            } as any
+        });
+    }
+
 }

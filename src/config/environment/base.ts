@@ -65,6 +65,7 @@ export const baseConfig: {
             table_name: 'doctors',
             unit: 'Doctor',
             requiredFields: [
+                { name: 'user_id', type: 'INTEGER' },
                 { name: 'name', type: 'TEXT' },
                 { name: 'specialty', type: 'TEXT' },
                 { name: 'phone', type: 'TEXT' },
@@ -87,6 +88,7 @@ export const baseConfig: {
             table_name: 'patients',
             unit: 'Patient',
             requiredFields: [
+                { name: 'user_id', type: 'INTEGER' },
                 { name: 'name', type: 'TEXT' },
                 { name: 'date_of_birth', type: 'DATE' },
                 { name: 'gender', type: 'TEXT' },

@@ -1,8 +1,8 @@
 import {BaseModel} from "../base/base.model";
 
 export interface Appointment extends BaseModel {
-    doctor_id: number;
-    patient_id: number;
+    doctor_id: number,
+    patient_id: number,
     appointment_details: Appointment_Details
 }
 

@@ -214,7 +214,7 @@ describe('BaseService Unit Tests', () => {
             (repositoryMock.findById as jest.Mock).mockResolvedValue(foundEntity);
 
             // Act
-            const result = await service.getById(id);
+            const result = await service.findById(id);
 
             /**
              * Assert:
@@ -235,7 +235,7 @@ describe('BaseService Unit Tests', () => {
             (repositoryMock.findById as jest.Mock).mockResolvedValue(null);
 
             // Act & assert that a StatusError is thrown
-            await expect(service.getById(id)).rejects.toEqual(
+            await expect(service.findById(id)).rejects.toEqual(
                 expect.objectContaining({
                     status: 404, // Not Found
                     name: expect.any(String)

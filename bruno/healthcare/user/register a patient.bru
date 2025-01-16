@@ -1,29 +1,37 @@
 meta {
-  name: create
+  name: register a patient
   type: http
-  seq: 1
+  seq: 4
 }
 
 post {
-  url: http://localhost:3000/api/{{entity}}
+  url: http://localhost:3000/api/register
   body: json
   auth: none
 }
 
 body:json {
   {
-    "name": "John Doe",
+    "username": "neodragonPatient2",
+    "password": "password",
+    "role": "Patient",
+    "name": "John Dose",
     "date_of_birth": "1980-01-01",
     "gender": "Male",
     "emergency_contact": "Jane Doe",
-    "allergies": ["Peanuts", "Penicillin"],
+    "allergies": [
+      "Peanuts",
+      "Penicillin"
+    ],
     "medical_history": [
       {
         "diagnosis": [
           {
             "id": 1,
             "description": "Hypertension",
-            "symptoms": ["High blood pressure"],
+            "symptoms": [
+              "High blood pressure"
+            ],
             "doctor_notes": "Monitor blood pressure regularly"
           }
         ],

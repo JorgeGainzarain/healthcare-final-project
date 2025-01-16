@@ -15,9 +15,7 @@ export class PatientController extends BaseController<Patient> {
         super(patientService);
         this.getRouter().get('', this.getAll.bind(this));
         this.getRouter().get('/:id', this.getById.bind(this));
-        this.getRouter().post('', this.create.bind(this));
         this.getRouter().put('/:id', this.update.bind(this));
-        this.getRouter().delete('/:id', this.delete.bind(this));
     }
 
 }
