@@ -21,22 +21,19 @@ An api designed for an app of healthcare, providing doctors and patients with va
 
 ### Steps
 
-Provide step-by-step instructions on how to install your project. Include any commands that need to be run in the terminal.
 
 ```
 # Clone the repository
-git clone https://github.com/yourusername/yourproject.git
+git clone [https://github.com/yourusername/yourproject.git](https://github.com/JorgeGainzarain/healthcare-final-project)
 
 # Navigate to the project directory
-cd yourproject
+cd healthcare-final-project
 
 # Install dependencies
 npm install
 ```
 
 ## Usage
-
-Explain how to use your project. Include code examples or command-line instructions if applicable.
 
 ```
 # Run the application
@@ -52,8 +49,6 @@ Modify the .env file to set the precharged admins
 Modify the config folder for each mode to set specific configurations like the port.
 
 ## Testing
-
-Explain how to run tests for your project. Include any commands or instructions needed to execute the test suite.
 
 ```
 # Run tests
