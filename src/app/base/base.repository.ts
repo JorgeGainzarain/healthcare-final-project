@@ -15,6 +15,7 @@ export abstract class BaseRepository<T extends BaseModel> {
 
 
     async create(entity: T ): Promise<T> {
+        this.stringifyFields(entity);
         if (await this.exists(entity)) {
             throw new StatusError(409, `A ${this.entityConfig.unit} with the provided details already exists.`);
         }
@@ -27,10 +28,12 @@ export abstract class BaseRepository<T extends BaseModel> {
         };
 
         const result = await this.databaseService.execQuery(queryDoc);
+        this.parseFields(entity);
         return result.rows[0];
     }
 
     async update(id: number, entity: Partial<T>): Promise<T> {
+        this.stringifyFields(entity);
         if (!(await this.existsById(id))) {
             throw new StatusError(404, `${this.entityConfig.unit} with id "${id}" not found.`);
         }
@@ -43,6 +46,7 @@ export abstract class BaseRepository<T extends BaseModel> {
 
         const result = await this.databaseService.execQuery(queryDoc);
 
+        this.parseFields(entity);
         return result.rows[0];
     }
 
@@ -56,6 +60,7 @@ export abstract class BaseRepository<T extends BaseModel> {
         };
         const result = await this.databaseService.execQuery(queryDoc);
 
+        this.parseFields(result.rows[0]);
         return result.rows[0];
     }
 
@@ -65,6 +70,7 @@ export abstract class BaseRepository<T extends BaseModel> {
             sql: `SELECT * FROM ${this.entityConfig.table_name}`
         };
         const result = await this.databaseService.execQuery(queryDoc);
+        result.rows.forEach((row: T) => this.parseFields(row));
         return result.rows;
     }
 
@@ -74,13 +80,16 @@ export abstract class BaseRepository<T extends BaseModel> {
             params: [id]
         };
         const result = await this.databaseService.execQuery(queryDoc);
+        this.parseFields(result.rows[0]);
         return result.rows[0]?? null;
     }
 
     async existsById(id: number): Promise<boolean> {
         return (await this.findById(id) !== null);
     }
+
     async findByFields(fields: Partial<T>): Promise<T | undefined> {
+        this.stringifyFields(fields);
         const columns = Object.keys(fields).map(key => `${key} = ?`).join(' AND ');
         const queryDoc = {
             sql: `SELECT * FROM ${this.entityConfig.table_name} WHERE ${columns}`,
@@ -89,7 +98,7 @@ export abstract class BaseRepository<T extends BaseModel> {
 
         const result = await this.databaseService.execQuery(queryDoc);
 
-
+        result.rows.forEach((row: T) => this.parseFields(row));
         return result.rows[0]?? undefined;
     }
 
