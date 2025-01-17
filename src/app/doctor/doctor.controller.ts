@@ -17,5 +17,4 @@ export class DoctorController extends BaseController<Doctor_Private | Doctor_Pub
         this.getRouter().get('/:id', this.getById.bind(this));
         this.getRouter().put('/:id', this.update.bind(this));
     }
-
 }
