@@ -12,7 +12,7 @@ import {UserType} from "../user/user.model";
 import {StatusError} from "../../utils/status_error";
 import {RecordRepository} from "../record/record.repository";
 import {AppointmentRepository} from "../appointment/appointment.repository";
-import {Session, SessionData } from "express-session";
+import {Session, SessionData} from "express-session";
 
 @Service()
 export class PatientService extends  BaseService<Patient> {
@@ -29,6 +29,7 @@ export class PatientService extends  BaseService<Patient> {
         this.recordRepository = recordRepository;
         this.appointmentRepository = appointmentRepository;
     }
+
 
     async findAll(session: Session & SessionData): Promise<Patient[]> {
         const role = session.role;
@@ -54,10 +55,6 @@ export class PatientService extends  BaseService<Patient> {
         else {
             aux_patients = patients;
         }
-
-        aux_patients.forEach((patient) => {
-            console.log("Patient: " + patient.id);
-        });
 
         await this.logAction(session.userId, aux_patients, 'retrieved');
         return aux_patients;
