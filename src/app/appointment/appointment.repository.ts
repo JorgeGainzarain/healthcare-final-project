@@ -15,39 +15,6 @@ export class AppointmentRepository extends BaseRepository<Appointment> {
         super(databaseService);
     }
 
-    // Overrides
-    async create(data: Appointment): Promise<Appointment> {
-        this.stringifyFields(data);
-        const appointment = await super.create(data);
-        this.parseFields(appointment);
-        return appointment;
-    }
-
-    async update(id: number, data: Partial<Appointment>): Promise<Appointment> {
-        this.stringifyFields(data);
-        const appointment = await super.update(id, data);
-        this.parseFields(appointment);
-        return appointment;
-    }
-
-    async findById(id: number): Promise<Appointment> {
-        const appointment = await super.findById(id);
-        this.parseFields(appointment);
-        return appointment;
-    }
-
-    async findAll(): Promise<Appointment[]> {
-        const appointments = await super.findAll();
-        appointments.forEach(appointment => this.parseFields(appointment));
-        return appointments;
-    }
-
-    async delete(id: number): Promise<Appointment> {
-        const appointment = await super.delete(id);
-        this.parseFields(appointment);
-        return appointment;
-    }
-
     async findByFields(fields: Partial<Appointment>): Promise<Appointment | undefined> {
         const searchFields: any = {};
         if (fields.patient_id !== undefined) searchFields.patient_id = fields.patient_id;
@@ -57,5 +24,4 @@ export class AppointmentRepository extends BaseRepository<Appointment> {
         }
         return await super.findByFields(searchFields);
     }
-
 }

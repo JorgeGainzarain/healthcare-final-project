@@ -14,5 +14,4 @@ export class NotificationRepository extends BaseRepository<Notification> {
     ) {
         super(databaseService);
     }
-
 }
