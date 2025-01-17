@@ -120,6 +120,7 @@ describe('User', () => {
 
     beforeEach(async () => {
         await databaseService.clearDatabase();
+        await databaseService.initializeDatabase();
         jest.clearAllMocks();
     });
 
@@ -145,7 +146,10 @@ describe('User', () => {
 
             // Search for the patient in the database
             const patient_response = await patientRepository.findByFields({ user_id: data.id });
-            expect(patient_response).toMatchObject(patient);
+            expect(patient_response).toMatchObject({
+                ...patient,
+                user_id: data.id
+            });
         });
 
         it('should register a doctorUser', async () => {
@@ -168,7 +172,10 @@ describe('User', () => {
 
             // Search for the doctor in the database
             const doctor_response = await doctorRepository.findByFields({ user_id: data.id });
-            expect(doctor_response).toMatchObject(doctor);
+            expect(doctor_response).toMatchObject({
+                ...doctor,
+                user_id: data.id
+            });
         });
 
         it('should throw an error when a admin is trying to register', async () => {

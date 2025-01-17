@@ -15,7 +15,7 @@ export class Api {
 
   constructor(
       public userController: UserController,
-      private doctorController: DoctorController,
+      public doctorController: DoctorController,
       private patientController: PatientController,
       private departmentController: DepartmentController,
       private recordController: RecordController,
