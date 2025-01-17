@@ -1,24 +1,24 @@
 import { NextFunction, Request, Response } from "express";
-import { DoctorController } from "../../../app/doctor/doctor.controller";
-import { DoctorService } from "../../../app/doctor/doctor.service";
+import { PatientController } from "../../../app/patient/patient.controller";
+import { PatientService } from "../../../app/patient/patient.service";
 import { createResponse } from "../../../utils/response";
-import {Doctor_Private} from "../../../app/doctor/doctor.model";
+import {Patient} from "../../../app/patient/patient.model";
 
-jest.mock("../../../app/doctor/doctor.service");
+jest.mock("../../../app/patient/patient.service");
 
-describe('DoctorController', () => {
-    let doctorController: DoctorController;
-    let doctorService: jest.Mocked<DoctorService>;
+describe('PatientController', () => {
+    let patientController: PatientController;
+    let patientService: jest.Mocked<PatientService>;
 
     beforeEach(() => {
-        doctorService = {
+        patientService = {
             create: jest.fn(),
             delete: jest.fn(),
             findById: jest.fn(),
             findByField: jest.fn(),
             update: jest.fn()
-        } as unknown as jest.Mocked<DoctorService>;
-        doctorController = new DoctorController(doctorService);
+        } as unknown as jest.Mocked<PatientService>;
+        patientController = new PatientController(patientService);
     });
 
     const mockResponse = (): Response => {
@@ -28,7 +28,7 @@ describe('DoctorController', () => {
         return res;
     };
 
-    it('should return all doctors when no query is provided', async () => {
+    it('should return all patients when no query is provided', async () => {
         const req = {
             query: {},
             session: { userId: 1 }
@@ -36,49 +36,49 @@ describe('DoctorController', () => {
         const res = mockResponse();
         const next = jest.fn() as NextFunction;
 
-        doctorService.findByField.mockResolvedValue([]);
+        patientService.findByField.mockResolvedValue([]);
 
-        await doctorController.getAll(req, res, next);
+        await patientController.getAll(req, res, next);
 
-        expect(doctorService.findByField).toHaveBeenCalledWith(req.session, {});
+        expect(patientService.findByField).toHaveBeenCalledWith(req.session, {});
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(
-            createResponse('success', 'Doctor retrieved successfully', [])
+            createResponse('success', 'Patient retrieved successfully', [])
         );
     });
 
-    it('should return matching doctors when searching by field', async () => {
+    it('should return matching patients when searching by field', async () => {
         const req = {
-            query: { specialty: 'Cardiology' },
+            query: { condition: 'Diabetes' },
             session: { userId: 1 }
         } as unknown as Request;
         const res = mockResponse();
         const next = jest.fn() as NextFunction;
 
-        const mockDoctors = [{ id: 1, name: 'Dr. Smith', specialty: 'Cardiology' } as Doctor_Private];
-        doctorService.findByField.mockResolvedValue(mockDoctors);
+        const mockPatients = [{ id: 1, name: 'John Doe', gender: 'male' } as Patient];
+        patientService.findByField.mockResolvedValue(mockPatients);
 
-        await doctorController.findByField(req, res, next);
+        await patientController.findByField(req, res, next);
 
-        expect(doctorService.findByField).toHaveBeenCalledWith(req.session, req.query);
+        expect(patientService.findByField).toHaveBeenCalledWith(req.session, req.query);
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(
-            createResponse('success', 'Doctor retrieved successfully', mockDoctors)
+            createResponse('success', 'Patient retrieved successfully', mockPatients)
         );
     });
 
     it('should handle errors in findByField', async () => {
         const req = {
-            query: { specialty: 'Cardiology' },
+            query: { condition: 'Diabetes' },
             session: { userId: 1 }
         } as unknown as Request;
         const res = mockResponse();
         const next = jest.fn() as NextFunction;
 
         const error = new Error('Service error');
-        doctorService.findByField.mockRejectedValue(error);
+        patientService.findByField.mockRejectedValue(error);
 
-        await doctorController.findByField(req, res, next);
+        await patientController.findByField(req, res, next);
 
         expect(next).toHaveBeenCalledWith(error);
     });
