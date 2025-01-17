@@ -32,7 +32,6 @@ export class DoctorController extends BaseController<Doctor_Private | Doctor_Pub
 
     async findByField(req: Request, res: Response, next: NextFunction): Promise<void> {
         const query = Object.assign({}, req.query);
-        console.log('query:', query); // Log the entire query object
 
         return this.doctorService.findByField(req.session as Session & SessionData, query)
             .then((doctors: Doctor_Private | Doctor_Public[]) => {

@@ -32,7 +32,6 @@ export class PatientController extends BaseController<Patient> {
 
     async findByField(req: Request, res: Response, next: NextFunction): Promise<void> {
         const query = Object.assign({}, req.query);
-        console.log('query:', query); // Log the entire query object
 
         return this.patientService.findByField(req.session as Session & SessionData, query)
             .then((patients: Patient[]) => {
