@@ -10,7 +10,7 @@ describe('DoctorController', () => {
     let doctorController: DoctorController;
     let doctorService: jest.Mocked<DoctorService>;
 
-    beforeEach(() => {
+    beforeAll(() => {
         doctorService = {
             create: jest.fn(),
             delete: jest.fn(),

@@ -64,7 +64,9 @@ export class DatabaseService {
     await this.openDatabase();
 
     for (const table of Object.values(config.entityValues) as EntityConfig<any>[]) {
-      const deleteTableSQL = `DELETE FROM ${table.table_name.toLowerCase().replace(' ', '_')}`;
+      if (table.table_name === '') continue;
+
+      const deleteTableSQL = `DELETE FROM ${table.table_name.toLowerCase().replace(' ', '_')}; DELETE FROM sqlite_sequence WHERE name='${table.table_name.toLowerCase().replace(' ', '_')}'`;
       await this.db!.exec(deleteTableSQL);
     }
 
