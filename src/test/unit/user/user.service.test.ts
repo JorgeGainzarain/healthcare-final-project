@@ -16,7 +16,7 @@ describe('UserService', () => {
     let doctorRepository: jest.Mocked<DoctorRepository>;
     let logService: jest.Mocked<LogService>;
 
-    beforeEach(() => {
+    beforeAll(() => {
         userRepository = {
             create: jest.fn(),
             findByFields: jest.fn(),

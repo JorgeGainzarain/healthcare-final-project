@@ -16,9 +16,9 @@ export class DoctorService extends BaseService<Doctor_Private | Doctor_Public> {
 
     constructor(
         protected doctorRepository: DoctorRepository,
-        protected auditService: LogService
+        protected logService: LogService
     ) {
-        super(doctorRepository, auditService);
+        super(doctorRepository, logService);
     }
 
     private transformToPublic(doctor: Doctor_Private): Doctor_Public {

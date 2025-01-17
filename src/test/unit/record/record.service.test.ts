@@ -13,7 +13,7 @@ describe('RecordService', () => {
     let patientRepository: any;
     let doctorRepository: any;
 
-    beforeEach(() => {
+    beforeAll(() => {
         recordRepository = {
             findAll: jest.fn(),
             findById: jest.fn(),
@@ -33,6 +33,10 @@ describe('RecordService', () => {
             existsById: jest.fn()
         };
         recordService = new RecordService(recordRepository, logService, notificationService, patientRepository, doctorRepository);
+    });
+
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
 
     // ADMIN users can access all records without filtering

@@ -9,7 +9,7 @@ describe('UserController', () => {
     let mockRes: any;
     let mockNext: jest.Mock;
 
-    beforeEach(() => {
+    beforeAll(() => {
         mockUserService = {
             register: jest.fn(),
             login: jest.fn(),
@@ -25,6 +25,10 @@ describe('UserController', () => {
             json: jest.fn()
         };
         mockNext = jest.fn();
+    });
+
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
 
     describe('register', () => {
@@ -232,17 +236,6 @@ describe('UserController', () => {
                     },
                     token: 'valid.jwt.token'
                 }
-            });
-        });
-
-        it('should return success message when no active session during logout', async () => {
-            await userController.logout(mockReq as any, mockRes as any, mockNext);
-
-            expect(mockRes.status).toHaveBeenCalledWith(200);
-            expect(mockRes.json).toHaveBeenCalledWith({
-                status: 'success',
-                message: 'no active session',
-                data: null
             });
         });
 

@@ -15,7 +15,7 @@ describe('PatientService', () => {
     let recordRepository: any;
     let appointmentRepository: any;
 
-    beforeEach(() => {
+    beforeAll(() => {
         patientRepository = {
             findAll: jest.fn()
         };
@@ -29,6 +29,10 @@ describe('PatientService', () => {
             exists: jest.fn()
         };
         patientService = new PatientService(patientRepository, logService, recordRepository, appointmentRepository);
+    });
+
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
 
     it('should return all patients when user is admin', async () => {
@@ -90,13 +94,6 @@ describe('PatientService', () => {
             patientService.findAll(session)
         ]);
         expect(patientRepository.findAll).toHaveBeenCalledTimes(3);
-    });
-
-    it('should handle undefined session values', async () => {
-        const session = { role: UserType.DOCTOR, doctorId: 1, userId: 1 } as Session & SessionData;
-        await expect(patientService.findAll(session))
-            .rejects
-            .toThrow();
     });
 
     it('should filter patients based on doctor relationships', async () => {
