@@ -6,6 +6,7 @@ import { StatusError } from "../../utils/status_error";
 import { BaseModel } from "./base.model";
 import { Log } from "../log/log.model";
 import {Session, SessionData} from "express-session";
+import {Patient} from "../patient/patient.model";
 
 export enum ActionType {
     CREATE = 'create',
@@ -40,6 +41,25 @@ export abstract class BaseService<T extends BaseModel> {
             user_id: user_id
         } as Log;
         await this.logService?.createLog(log);
+    }
+
+    // Method to filter by a specific field
+    async findByField(session: Session & SessionData,  query: any): Promise<T[]> {
+
+        let entities = await this.findAll(session);
+
+        for (const key in query) {
+            if (query.hasOwnProperty(key)) {
+                const field = key as keyof Patient;
+                const value = query[key] as string;
+
+                entities = entities.filter((entity) => {
+                    const patientEntity = entity as unknown as Patient;
+                    return (patientEntity[field]! as string).toLowerCase().includes(value.toLowerCase());
+                });
+            }
+        }
+        return entities;
     }
 
     // Hooks to override in subclasses
