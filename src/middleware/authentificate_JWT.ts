@@ -14,21 +14,23 @@ const publicRoutes = [
     '/login',
     '/register',
     '/department',
-    '/doctor',
+    '/doctor/',
 ];
 
 export async function authenticate(req: Request, res: Response, next: NextFunction) {
     const path = req.path;
-    if (publicRoutes.includes(path)) {
-        return next();
-    }
 
     try {
         await authenticateJWT(req, res, next);
         await validateUser(req, res, next);
     }
     catch (error) {
-        next(error);
+        if (publicRoutes.some(route => path.includes(route))) {
+            return next();
+        }
+        else {
+            next(error);
+        }
     }
 
     next();

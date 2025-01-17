@@ -44,7 +44,7 @@ export abstract class BaseService<T extends BaseModel> {
 
     // Hooks to override in subclasses
     protected async before(action: ActionType, args: any[]): Promise<void> {
-        // Default no-op hook
+        return;
     }
 
     protected async after(action: ActionType, result: any, args: any[]): Promise<any> {
@@ -53,49 +53,37 @@ export abstract class BaseService<T extends BaseModel> {
 
     async create(session: Session & Partial<SessionData>, part_entity: Partial<T>): Promise<T> {
         const user_id = session.userId;
-        if (!user_id) {
-            throw new StatusError(401, 'User ID is missing');
-        }
         await this.before(ActionType.CREATE, [session, part_entity]);
         let entity = validateObject(part_entity, this.entityConfig.requiredFields);
         const createdEntity = await this.repository.create(entity);
         await this.after(ActionType.CREATE, createdEntity, [session, part_entity]);
-        await this.logAction(user_id, createdEntity, 'created');
+        await this.logAction(user_id?? 0, createdEntity, 'created');
         return createdEntity;
     }
 
     async update(session: Session & Partial<SessionData>, id: number, part_updates: Partial<T>): Promise<T> {
         const user_id = session.userId;
-        if (!user_id) {
-            throw new StatusError(401, 'User ID is missing');
-        }
         await this.before(ActionType.UPDATE, [session, id, part_updates]);
         validateRequiredParams({ id });
         validatePartialObject(part_updates, this.entityConfig.requiredFields);
         const updatedEntity = await this.repository.update(id, part_updates);
         await this.after(ActionType.UPDATE, updatedEntity, [session, id, part_updates]);
-        await this.logAction(user_id, updatedEntity, 'updated');
+        await this.logAction(user_id?? 0, updatedEntity, 'updated');
         return updatedEntity;
     }
 
     async delete(session: Session & Partial<SessionData>, id: number): Promise<T> {
         const user_id = session.userId;
-        if (!user_id) {
-            throw new StatusError(401, 'User ID is missing');
-        }
         await this.before(ActionType.DELETE, [session, id]);
         validateRequiredParams({ id });
         const deletedEntity = await this.repository.delete(id);
         await this.after(ActionType.DELETE, deletedEntity, [session, id]);
-        await this.logAction(user_id, deletedEntity, 'deleted');
+        await this.logAction(user_id?? 0, deletedEntity, 'deleted');
         return deletedEntity;
     }
 
     async findById(session: Session & Partial<SessionData>, id: number): Promise<T> {
         const user_id = session.userId;
-        if (!user_id) {
-            throw new StatusError(401, 'User ID is missing');
-        }
         await this.before(ActionType.VIEW, [session, id]);
         validateRequiredParams({ id });
         let entity = await this.repository.findById(id);
@@ -103,19 +91,16 @@ export abstract class BaseService<T extends BaseModel> {
             throw new StatusError(404, `${this.entityConfig.unit} with id "${id}" not found.`);
         }
         entity = await this.after(ActionType.VIEW, entity, [session, id]);
-        await this.logAction(user_id, entity, 'retrieved');
+        await this.logAction(user_id?? 0, entity, 'retrieved');
         return entity;
     }
 
     async findAll(session: Session & Partial<SessionData>): Promise<T[]> {
         const user_id = session.userId;
-        if (!user_id) {
-            throw new StatusError(401, 'User ID is missing');
-        }
         await this.before(ActionType.VIEW_ALL, [session]);
         let entities = await this.repository.findAll();
         entities = await this.after(ActionType.VIEW_ALL, entities, [session]);
-        await this.logAction(user_id, entities, 'retrieved');
+        await this.logAction(user_id?? 0, entities, 'retrieved');
         return entities;
     }
 }
