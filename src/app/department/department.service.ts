@@ -14,9 +14,9 @@ export class DepartmentService extends  BaseService<Department> {
 
     constructor(
         protected departmentRepository: DepartmentRepository,
-        protected auditService: LogService
+        protected logService: LogService
     ) {
-        super(departmentRepository, auditService);
+        super(departmentRepository, logService);
     }
 
     async before(action: ActionType, args: any): Promise<any> {

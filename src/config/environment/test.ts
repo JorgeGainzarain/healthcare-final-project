@@ -5,7 +5,7 @@ export const test = {
   ...baseConfig,
   dbOptions: {
     ...baseConfig.dbOptions,
-    database: 'node-api-project-test.db',
+    database: 'healthcare-final-project-test.db',
     port: 1000
   },
   entityValues: {

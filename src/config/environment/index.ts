@@ -11,7 +11,7 @@ const all = {
   user_forgot_pass_key: '3ac1194d22d53db7e2425d8f',
   user_sessions: {
     // Secret to sign the session ID
-    secret: process.env.USER_SESSION_SECRET || 'default_secret',
+    secret: process.env.USER_SESSION_SECRET,
     // Número de días a los que expirará la sesión
     expiration_days: 7,
     // Número máximo de sesiones activas concurrentemente

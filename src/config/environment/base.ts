@@ -37,7 +37,7 @@ export const baseConfig: {
     dbOptions: {
         user: 'dbUser',
         host: 'localhost',
-        database: 'node-api-project.db',
+        database: 'healthcare-final-project.db',
         password: 'dbPassword',
         port: 5432
     },
