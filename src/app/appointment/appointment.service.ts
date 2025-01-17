@@ -22,11 +22,11 @@ export class AppointmentService extends BaseService<Appointment> {
 
     constructor(
         protected appointmentRepository: AppointmentRepository,
-        protected auditService: LogService,
+        protected logService: LogService,
 
     protected notificationService: NotificationService
 ) {
-        super(appointmentRepository, auditService);
+        super(appointmentRepository, logService);
         this.notificationService = Container.get(NotificationService);
     }
 

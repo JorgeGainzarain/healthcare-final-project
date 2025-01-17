@@ -20,12 +20,12 @@ export class PatientService extends  BaseService<Patient> {
 
     constructor(
         protected patientRepository: PatientRepository,
-        protected auditService: LogService,
+        protected logService: LogService,
 
         protected recordRepository: RecordRepository,
         protected appointmentRepository: AppointmentRepository
     ) {
-        super(patientRepository, auditService);
+        super(patientRepository, logService);
         this.recordRepository = recordRepository;
         this.appointmentRepository = appointmentRepository;
     }

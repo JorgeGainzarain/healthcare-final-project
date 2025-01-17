@@ -22,13 +22,13 @@ export class RecordService extends  BaseService<Record> {
 
     constructor(
         protected recordRepository: RecordRepository,
-        protected auditService: LogService,
+        protected logService: LogService,
 
         protected notificationService: NotificationService,
         protected patientRepository: PatientRepository,
         protected doctorRepository: DoctorRepository
     ) {
-        super(recordRepository, auditService);
+        super(recordRepository, logService);
         this.notificationService= notificationService;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;

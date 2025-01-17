@@ -12,8 +12,8 @@ export class NotificationService extends BaseService<Notification> {
 
     constructor(
         protected notificationRepository: NotificationRepository,
-        protected auditService: LogService
+        protected logService: LogService
     ) {
-        super(notificationRepository, auditService);
+        super(notificationRepository, logService);
     }
 }
