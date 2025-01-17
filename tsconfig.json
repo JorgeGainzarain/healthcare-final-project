@@ -17,6 +17,6 @@
     "emitDecoratorMetadata": true                // Emit metadata for decorators
 
   },
-  "include": ["src/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]                     // Include all .ts files in the src folder
 }
