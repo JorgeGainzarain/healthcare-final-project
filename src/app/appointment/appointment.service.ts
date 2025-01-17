@@ -14,6 +14,7 @@ import { validateCreate } from './validations/validateCreate';
 import { validateCancel } from './validations/validateCancel';
 import { validateUpdate } from './validations/validateUpdate';
 import {Session, SessionData } from "express-session";
+import {NotificationService} from "../notification/notification.service";
 
 @Service()
 export class AppointmentService extends BaseService<Appointment> {
@@ -21,9 +22,12 @@ export class AppointmentService extends BaseService<Appointment> {
 
     constructor(
         protected appointmentRepository: AppointmentRepository,
-        protected auditService: LogService
-    ) {
-        super(appointmentRepository, auditService);
+        protected logService: LogService,
+
+    protected notificationService: NotificationService
+) {
+        super(appointmentRepository, logService);
+        this.notificationService = Container.get(NotificationService);
     }
 
     async delete(session: Session & Partial<SessionData>, id: number): Promise<Appointment> {
@@ -77,6 +81,43 @@ export class AppointmentService extends BaseService<Appointment> {
                 break;
             case ActionType.UPDATE:
                 await validateUpdate(role, args);
+                break;
+        }
+    }
+
+    async after(action: ActionType, result: any, args: any[]): Promise<any> {
+        const session = args[0];
+        const role = session.role;
+        if (role === UserType.ADMIN) {
+            return;
+        }
+        if (result as Appointment === undefined) {
+            throw new StatusError(500, 'Internal server error');
+        }
+        switch (action) {
+            case ActionType.CREATE:
+                await this.notificationService.create(session, {
+                    title: 'Appointment Created',
+                    message: 'Your appointment has been successfully created',
+                    user_ids: [result.doctor_id, result.patient_id],
+                    timestamp: new Date() // The notification would be sent immediately, this could be modified in a real-world scenario
+                });
+                break;
+            case ActionType.UPDATE:
+                await this.notificationService.create(session, {
+                    title: 'Appointment Rescheduled',
+                    message: 'Your appointment has been successfully rescheduled',
+                    user_ids: [result.doctor_id, result.patient_id],
+                    timestamp: new Date()
+                });
+                break;
+            case ActionType.DELETE:
+                await this.notificationService.create(session, {
+                    title: 'Appointment Cancelled',
+                    message: 'Your appointment has been successfully cancelled',
+                    user_ids: [result.doctor_id, result.patient_id],
+                    timestamp: new Date()
+                });
                 break;
         }
     }

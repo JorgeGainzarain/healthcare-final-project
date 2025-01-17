@@ -14,8 +14,8 @@ export class Api {
   private readonly apiRouter: Router;
 
   constructor(
-      private userController: UserController,
-      private doctorController: DoctorController,
+      public userController: UserController,
+      public doctorController: DoctorController,
       private patientController: PatientController,
       private departmentController: DepartmentController,
       private recordController: RecordController,
