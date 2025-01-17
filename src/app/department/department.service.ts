@@ -4,7 +4,7 @@ import {EntityConfig} from "../base/base.model";
 import {config} from "../../config/environment";
 import {DepartmentRepository} from "./department.repository";
 import {LogService} from "../log/log.service";
-import {Container, Service} from "typedi";
+import {Service} from "typedi";
 import {UserType} from "../user/user.model";
 import {StatusError} from "../../utils/status_error";
 
@@ -21,6 +21,9 @@ export class DepartmentService extends  BaseService<Department> {
 
     async before(action: ActionType, args: any): Promise<any> {
         const session = args[0];
+        if (!session) {
+            throw new StatusError(401, 'Unauthorized');
+        }
         const role = session.role;
         if (action == ActionType.CREATE) {
             if (role !== UserType.ADMIN) {
