@@ -1,6 +1,3 @@
-import { Container } from 'typedi';
-import { PatientRepository } from '../../patient/patient.repository';
-import { DoctorRepository } from '../../doctor/doctor.repository';
 import { StatusError } from '../../../utils/status_error';
 import { UserType } from '../../user/user.model';
 
@@ -18,8 +15,8 @@ export async function validateCreate(role: string, args: any) {
     }
 
     const { patient_id, doctor_id } = part_entity;
-    const patientRepository = Container.get(PatientRepository);
-    const doctorRepository = Container.get(DoctorRepository);
+    const patientRepository = args[2];
+    const doctorRepository = args[3];
 
     if (!(await patientRepository.existsById(patient_id))) {
         throw new StatusError(404, 'Patient not found');

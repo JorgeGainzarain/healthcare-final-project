@@ -5,7 +5,7 @@ export const production = {
     ...baseConfig,
     dbOptions: {
         ...baseConfig.dbOptions,
-        database: 'node-api-project-prod.db',
+        database: 'healthcare-final-project-prod.db',
         port: 1000
     },
     entityValues: {

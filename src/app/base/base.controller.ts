@@ -9,7 +9,7 @@ export abstract class BaseController<T extends BaseModel> {
 
     protected readonly companyRouter: Router;
 
-    protected constructor(
+    constructor(
         private readonly service: BaseService<T>
     ) {
         this.companyRouter = Router();

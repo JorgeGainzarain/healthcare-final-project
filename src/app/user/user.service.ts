@@ -11,8 +11,7 @@ import {StatusError} from "../../utils/status_error";
 import {validateObject} from "../../utils/validation";
 import {Log} from 'app/log/log.model';
 import {Patient} from "../patient/patient.model";
-import {Doctor_Private} from "../doctor/doctor.model";
-import {Session, SessionData} from "express-session";
+import {Doctor_Private, Doctor_Public} from "../doctor/doctor.model";
 import {PatientRepository} from "../patient/patient.repository";
 import {DoctorRepository} from "../doctor/doctor.repository";
 
@@ -34,11 +33,11 @@ export class UserService extends BaseService<User | Patient | Doctor_Private> {
         this.doctorRepository = doctorRepository;
     }
 
-    public async register(session: Session & Partial<SessionData>, part_user: Partial<User>): Promise<Omit<User, 'password'>> {
+    public async register(part_user: Partial<User>): Promise<Omit<User, 'password'>> {
+        if (part_user.role === UserType.ADMIN) {
+            throw new StatusError(403, 'Admin registration is not allowed');
+        }
         const userFull = validateObject(part_user, this.entityConfig.requiredFields)
-
-        // Create Patient or Doctor object if user is of type Patient or Doctor
-        this.validateUser(userFull);
 
         // Parse user object only with the required fields
         const user = { username: userFull.username, password: userFull.password, role: userFull.role } as User;
@@ -50,18 +49,21 @@ export class UserService extends BaseService<User | Patient | Doctor_Private> {
 
         // Remove password and username fields from the user object
         const { username, role, password: pass, ...userWithoutPasswordAndUser } = { ...userFull, user_id: createdUser.id };
-        session.userId = userWithoutPasswordAndUser.id?? 0;
+
+        let createdEntity: Patient | Doctor_Private | Doctor_Public;
 
         if (user.role.toUpperCase() === UserType.PATIENT) {
-            await this.patientRepository.create({
+            createdEntity = await this.patientRepository.create({
                 ...userWithoutPasswordAndUser,
                 user_id: createdUser.id
             } as Patient);
+            validateObject(createdEntity, config.entityValues.patient.requiredFields);
         } else if (user.role.toUpperCase() === UserType.DOCTOR) {
-            await this.doctorRepository.create({
+            createdEntity = await this.doctorRepository.create({
                 ...userWithoutPasswordAndUser,
                 user_id: createdUser.id
             } as Doctor_Private);
+            validateObject(createdEntity, config.entityValues.doctor.requiredFields);
         }
 
         await this.logUserAction({ ...userWithoutPassword } as User , 'registered');
@@ -93,17 +95,5 @@ export class UserService extends BaseService<User | Patient | Doctor_Private> {
             user_id: user.id
         } as Log;
         await this.logService.createLog(log);
-    }
-
-    private validateUser(user: User): User | Patient | Doctor_Private {
-        // Check if user can be validated as a Patient or Doctor objects
-        if (user.role === UserType.PATIENT) {
-            user = validateObject(user, config.entityValues.patient.requiredFields);
-        } else if (user.role === UserType.DOCTOR) {
-            user = validateObject(user, config.entityValues.doctor.requiredFields);
-        } else if (user.role === UserType.ADMIN) {
-            // Logic not implemented yet
-        }
-        return user;
     }
 }

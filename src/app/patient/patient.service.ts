@@ -4,7 +4,7 @@ import {EntityConfig} from "../base/base.model";
 import {config} from "../../config/environment";
 import {PatientRepository} from "./patient.repository";
 import {LogService} from "../log/log.service";
-import {Container, Service} from "typedi";
+import {Service} from "typedi";
 
 import {validateUpdate} from "./validations/validateUpdate";
 import {validateView} from "./validations/validateView";
@@ -12,7 +12,7 @@ import {UserType} from "../user/user.model";
 import {StatusError} from "../../utils/status_error";
 import {RecordRepository} from "../record/record.repository";
 import {AppointmentRepository} from "../appointment/appointment.repository";
-import {Session, SessionData } from "express-session";
+import {Session, SessionData} from "express-session";
 
 @Service()
 export class PatientService extends  BaseService<Patient> {
@@ -20,16 +20,19 @@ export class PatientService extends  BaseService<Patient> {
 
     constructor(
         protected patientRepository: PatientRepository,
-        protected auditService: LogService
+        protected logService: LogService,
+
+        protected recordRepository: RecordRepository,
+        protected appointmentRepository: AppointmentRepository
     ) {
-        super(patientRepository, auditService);
+        super(patientRepository, logService);
+        this.recordRepository = recordRepository;
+        this.appointmentRepository = appointmentRepository;
     }
+
 
     async findAll(session: Session & SessionData): Promise<Patient[]> {
         const role = session.role;
-        if (!role) {
-            throw new StatusError(403, 'You must be logged in to perform this action');
-        }
         if (role === UserType.PATIENT) {
             throw new StatusError(403, 'Patients are not allowed to view all patients');
         }
@@ -37,22 +40,20 @@ export class PatientService extends  BaseService<Patient> {
         let patients: Patient[] = await this.patientRepository.findAll();
         const doctor_id = session.doctorId;
 
-        const recordRepository = Container.get(RecordRepository);
-        const appointmentRepository = Container.get(AppointmentRepository);
-
-        const aux_patients = [];
+        let aux_patients = [];
 
         if (role !== UserType.ADMIN) {
             for (let i = 0; i < patients.length; i++) {
-                const record = await recordRepository.exists({patient_id: patients[i].id, doctor_id: doctor_id});
-                const appointment = await appointmentRepository.exists({patient_id: patients[i].id, doctor_id: doctor_id});
-                console.log('Doctor ' + doctor_id + ' trying to access patient ' + patients[i].id);
-                console.log('Record: ' + record + ' Appointment: ' + appointment);
+                const record = await this.recordRepository.exists({patient_id: patients[i].id, doctor_id: doctor_id});
+                const appointment = await this.appointmentRepository.exists({patient_id: patients[i].id, doctor_id: doctor_id});
                 if (record || appointment) {
-                    aux_patients[i] = patients[i];
+                    aux_patients.push(patients[i]);
                 }
             }
 
+        }
+        else {
+            aux_patients = patients;
         }
 
         await this.logAction(session.userId, aux_patients, 'retrieved');
@@ -62,9 +63,6 @@ export class PatientService extends  BaseService<Patient> {
     async before(action: ActionType, args: any) {
         const session = args[0] as Session & SessionData;
         const role = session.role;
-        if (!role) {
-            throw new StatusError(401, 'Access token is missing or invalid');
-        }
         if (role == UserType.ADMIN) {
             return;
         }
