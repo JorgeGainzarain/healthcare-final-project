@@ -7,7 +7,7 @@ import { config } from "../../config/environment";
 
 @Service()
 export class UserRepository extends BaseRepository<User> {
-    protected entityConfig = config.entityValues.user;
+    entityConfig = config.entityValues.user;
 
     constructor(
         protected readonly databaseService: DatabaseService
